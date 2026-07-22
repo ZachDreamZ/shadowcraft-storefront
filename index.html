@@ -16,9 +16,22 @@
     .hero p { font-size: 1.1rem; color: var(--muted); max-width: 600px; margin: 0 auto 32px; }
     .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: var(--accent-light); padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 24px; }
     .promo { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin-bottom: 40px; display: inline-block; }
-    .products { padding: 40px 0 80px; }
-    .products h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 32px; text-align: center; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
+    
+    .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 32px; text-align: center; padding-top: 40px;}
+    
+    /* Resources List */
+    .resource-list { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 40px; margin-bottom: 80px; }
+    .resource-item { border-bottom: 1px solid var(--border); padding: 24px 0; display: flex; flex-direction: column; gap: 8px;}
+    .resource-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .resource-item:first-child { padding-top: 0; }
+    .res-title { font-size: 1.2rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 12px;}
+    .res-desc { color: var(--muted); font-size: 15px; }
+    .res-link { color: var(--accent-light); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .res-link:hover { text-decoration: underline; }
+    .github-icon { width: 20px; height: 20px; fill: currentColor; }
+
+    /* Products Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-bottom: 80px;}
     .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; }
     .card:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(99,102,241,0.1); }
     .card-tag { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; align-self: flex-start; }
@@ -36,7 +49,7 @@
     .btn:hover { background: #4f46e5; transform: translateY(-1px); }
     .features { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
     .feat { font-size: 12px; color: var(--muted); background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px; }
-    .cta { text-align: center; padding: 60px 24px 80px; }
+    .cta { text-align: center; padding: 0px 24px 80px; }
     .cta h2 { font-size: 2rem; font-weight: 800; margin-bottom: 12px; }
     .cta p { color: var(--muted); margin-bottom: 24px; }
     .stats { display: flex; justify-content: center; gap: 48px; padding: 40px 0; }
@@ -60,8 +73,68 @@
   </div>
 
   <div class="container">
-    <section class="products">
-      <h2>All Products</h2>
+
+    <!-- Free Resources Section Added -->
+    <h2 class="section-title">Free Resources: 10 Repos to Automate Work & Income</h2>
+    <p style="text-align: center; color: var(--muted); margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto;">
+      Building with these repos? Make sure you validate your custom MCP servers with <a href="#products" style="color: var(--accent-light);">MCP Linter Pro</a> so your agents don't silently crash.
+    </p>
+    
+    <div class="resource-list">
+      <div class="resource-item">
+        <div class="res-title">1. AutoHedge</div>
+        <div class="res-desc">AI-powered autonomous trading framework with multi-agent automation.</div>
+        <a href="https://github.com/The-Swarm-Corporation/AutoHedge" class="res-link">github.com/The-Swarm-Corporation/AutoHedge</a>
+      </div>
+      <div class="resource-item">
+        <div class="res-title">2. Vibe-Trading</div>
+        <div class="res-desc">An AI trading assistant for market research, backtesting, and portfolio analysis.</div>
+        <a href="https://github.com/HKUDS/Vibe-Trading" class="res-link">github.com/HKUDS/Vibe-Trading</a>
+      </div>
+      <div class="resource-item">
+        <div class="res-title">3. OpenHands</div>
+        <div class="res-desc">An open-source AI software engineer that writes code, fixes bugs, and automates development.</div>
+        <a href="https://github.com/All-Hands-AI/OpenHands" class="res-link">github.com/All-Hands-AI/OpenHands</a>
+      </div>
+      <div class="resource-item">
+        <div class="res-title">4. Agentic Inbox</div>
+        <div class="res-desc">Turn your inbox into an AI-powered assistant that reads, organizes, and replies to emails.</div>
+        <a href="https://github.com/cloudflare/agentic-inbox" class="res-link">github.com/cloudflare/agentic-inbox</a>
+      </div>
+      <div class="resource-item">
+        <div class="res-title">5. Fincept Terminal</div>
+        <div class="res-desc">A modern financial research terminal packed with market analysis tools.</div>
+        <a href="https://github.com/Fincept-Corporation/FinceptTerminal" class="res-link">github.com/Fincept-Corporation/FinceptTerminal</a>
+      </div>
+      <div class="resource-item">
+        <div class="res-title">6. Camofox</div>
+        <div class="res-desc">A stealth browser built for reliable web automation and data collection.</div>
+        <a href="https://github.com/daijro/camoufox" class="res-link">github.com/daijro/camoufox</a>
+      </div>
+      <div class="resource-item">
+        <div class="res-title">7. Toprank</div>
+        <div class="res-desc">An AI-powered SEO toolkit to help websites rank higher and grow organic traffic.</div>
+        <a href="https://github.com/nowork-studio/toprank" class="res-link">github.com/nowork-studio/toprank</a>
+      </div>
+      <div class="resource-item">
+        <div class="res-title">8. Hyperframes</div>
+        <div class="res-desc">Create personalized AI videos at scale for marketing and outreach.</div>
+        <a href="https://github.com/heygen-com/hyperframes" class="res-link">github.com/heygen-com/hyperframes</a>
+      </div>
+      <div class="resource-item">
+        <div class="res-title">9. AutoAgent</div>
+        <div class="res-desc">Build powerful AI agents using simple natural language instructions.</div>
+        <a href="https://github.com/HKUDS/AutoAgent" class="res-link">github.com/HKUDS/AutoAgent</a>
+      </div>
+      <div class="resource-item">
+        <div class="res-title">10. Flowise</div>
+        <div class="res-desc">Design AI apps and chatbots visually with drag-and-drop workflows.</div>
+        <a href="https://github.com/FlowiseAI/Flowise" class="res-link">github.com/FlowiseAI/Flowise</a>
+      </div>
+    </div>
+
+    <section class="products" id="products">
+      <h2 class="section-title" style="padding-top: 0;">Developer Tools & Kits</h2>
       <div class="grid">
 
         <div class="card" style="border-color: rgba(34,197,94,0.4); box-shadow: 0 0 20px rgba(34,197,94,0.1);">
