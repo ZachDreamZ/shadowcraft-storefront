@@ -15,20 +15,23 @@
     .hero h1 span { color: var(--accent); }
     .hero p { font-size: 1.1rem; color: var(--muted); max-width: 600px; margin: 0 auto 32px; }
     .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: var(--accent-light); padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 24px; }
+    .promo { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin-bottom: 40px; display: inline-block; }
     .products { padding: 40px 0 80px; }
     .products h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 32px; text-align: center; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: all 0.3s ease; position: relative; overflow: hidden; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; }
     .card:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(99,102,241,0.1); }
-    .card-tag { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; }
+    .card-tag { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; align-self: flex-start; }
     .tag-security { background: rgba(239,68,68,0.12); color: #f87171; }
     .tag-mcp { background: rgba(34,197,94,0.12); color: #4ade80; }
     .tag-ai { background: rgba(99,102,241,0.12); color: var(--accent-light); }
     .tag-content { background: rgba(234,179,8,0.12); color: #facc15; }
     .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
-    .card p { color: var(--muted); font-size: 14px; margin-bottom: 16px; line-height: 1.5; }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .card p { color: var(--muted); font-size: 14px; margin-bottom: 16px; line-height: 1.5; flex-grow: 1; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+    .price-box { display: flex; flex-direction: column; }
     .price { font-size: 1.4rem; font-weight: 800; color: var(--text); }
+    .discount { font-size: 12px; color: var(--green); font-weight: 600; }
     .btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 8px; text-decoration: none; transition: all 0.2s; }
     .btn:hover { background: #4f46e5; transform: translateY(-1px); }
     .features { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
@@ -48,6 +51,7 @@
     <div class="badge">AI Developer Tools</div>
     <h1>Ship <span>Production AI</span> with Confidence</h1>
     <p>Security toolkits, MCP server tools, and agent frameworks used by developers building autonomous AI systems.</p>
+    <div class="promo">🚀 Use code <strong>LAUNCH50</strong> at checkout for 50% off MCP Linter Pro!</div>
     <div class="stats">
       <div><div class="stat-num">10</div><div class="stat-label">Products</div></div>
       <div><div class="stat-num">50+</div><div class="stat-label">Tools &amp; Scripts</div></div>
@@ -60,12 +64,32 @@
       <h2>All Products</h2>
       <div class="grid">
 
+        <div class="card" style="border-color: rgba(34,197,94,0.4); box-shadow: 0 0 20px rgba(34,197,94,0.1);">
+          <div class="card-tag tag-mcp">Featured MCP Tool</div>
+          <h3>MCP Server Linter Pro — Runtime Validation</h3>
+          <p>Runtime health checks, tool call testing, latency profiling, protocol compliance, and batch mode for MCP servers.</p>
+          <div class="features"><span class="feat">Health Checks</span><span class="feat">Tool Testing</span><span class="feat">CI/CD Integration</span></div>
+          <div class="card-footer">
+            <div class="price-box">
+              <span class="price">$9</span>
+              <span class="discount">Code: LAUNCH50</span>
+            </div>
+            <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="btn" style="background: var(--green);">Get It 50% Off →</a>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-tag tag-security">Security</div>
           <h3>LLM Security &amp; Red-Teaming Toolkit</h3>
           <p>Automated security scanner, 200+ prompt injection payloads, Lakera-style guardrails, and vulnerability audit engine.</p>
           <div class="features"><span class="feat">RedTeamScanner</span><span class="feat">200+ Payloads</span><span class="feat">Risk Scoring</span></div>
-          <div class="card-footer"><span class="price">$19</span><a href="https://shadowcraft41.gumroad.com/l/zzdvj" class="btn">Get It →</a></div>
+          <div class="card-footer">
+            <div class="price-box">
+              <span class="price">$19</span>
+              <span class="discount">Code: SECURE30</span>
+            </div>
+            <a href="https://shadowcraft41.gumroad.com/l/zzdvj" class="btn">Get It →</a>
+          </div>
         </div>
 
         <div class="card">
@@ -73,7 +97,13 @@
           <h3>Production Context Engineering &amp; Memory Kit</h3>
           <p>Dynamic prompt compiler, token budget engine, Claude XML formatters, and vector memory schemas for Cursor, Claude Code, and LangGraph.</p>
           <div class="features"><span class="feat">Memory Architectures</span><span class="feat">RAG Blueprints</span><span class="feat">Context Calibration</span></div>
-          <div class="card-footer"><span class="price">$19</span><a href="https://shadowcraft41.gumroad.com/l/mgncch" class="btn">Get It →</a></div>
+          <div class="card-footer">
+            <div class="price-box">
+              <span class="price">$19</span>
+              <span class="discount">Code: CONTEXT30</span>
+            </div>
+            <a href="https://shadowcraft41.gumroad.com/l/mgncch" class="btn">Get It →</a>
+          </div>
         </div>
 
         <div class="card">
@@ -81,23 +111,24 @@
           <h3>MCP Server Toolkit — Universal Router &amp; Manager</h3>
           <p>Discover, install, configure, and route requests across 10 production-grade MCP servers. Pre-built configs for Claude Desktop, Cursor, and Windsurf.</p>
           <div class="features"><span class="feat">5 Router Patterns</span><span class="feat">Cursor Rules</span><span class="feat">Memory Guidelines</span></div>
-          <div class="card-footer"><span class="price">$19</span><a href="https://shadowcraft41.gumroad.com/l/stqlrk" class="btn">Get It →</a></div>
-        </div>
-
-        <div class="card">
-          <div class="card-tag tag-mcp">MCP Tools</div>
-          <h3>MCP Server Linter Pro — Runtime Validation</h3>
-          <p>Runtime health checks, tool call testing, latency profiling, protocol compliance, and batch mode for MCP servers.</p>
-          <div class="features"><span class="feat">Health Checks</span><span class="feat">Tool Testing</span><span class="feat">CI/CD Integration</span></div>
-          <div class="card-footer"><span class="price">$9</span><a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="btn">Get It →</a></div>
+          <div class="card-footer">
+            <div class="price-box">
+              <span class="price">$19</span>
+              <span class="discount">Code: MCP30</span>
+            </div>
+            <a href="https://shadowcraft41.gumroad.com/l/stqlrk" class="btn">Get It →</a>
+          </div>
         </div>
 
         <div class="card">
           <div class="card-tag tag-ai">AI Growth</div>
           <h3>AI Growth Ops Framework</h3>
           <p>Production-ready Python Playwright scripts to automatically post on X, LinkedIn, Dev.to, and Hacker News.</p>
-          <div class="features"><span class="feat">X/Twitter CDP</span><span class="feat">LinkedIn</span><span class="feat">Dev.to</span><span class="feat">HN</span></div>
-          <div class="card-footer"><span class="price">$49</span><a href="https://shadowcraft41.gumroad.com/l/bmyimh" class="btn">Get It →</a></div>
+          <div class="features"><span class="feat">Marketing Agents</span><span class="feat">Playwright</span><span class="feat">Growth Scripts</span></div>
+          <div class="card-footer">
+            <div class="price-box"><span class="price">$49</span></div>
+            <a href="https://shadowcraft41.gumroad.com/l/bmyimh" class="btn">Get It →</a>
+          </div>
         </div>
 
         <div class="card">
@@ -105,7 +136,13 @@
           <h3>AI Content Studio — 100+ Prompts</h3>
           <p>Video and image generation prompt library for creators building AI-powered content pipelines.</p>
           <div class="features"><span class="feat">100+ Prompts</span><span class="feat">Video Gen</span><span class="feat">Image Gen</span></div>
-          <div class="card-footer"><span class="price">$19</span><a href="https://shadowcraft41.gumroad.com/l/ctqdzy" class="btn">Get It →</a></div>
+          <div class="card-footer">
+            <div class="price-box">
+              <span class="price">$19</span>
+              <span class="discount">Code: CREATE40</span>
+            </div>
+            <a href="https://shadowcraft41.gumroad.com/l/ctqdzy" class="btn">Get It →</a>
+          </div>
         </div>
 
         <div class="card">
@@ -113,7 +150,10 @@
           <h3>Autonomous AI Agent Orchestration Guide</h3>
           <p>Comprehensive guide on building autonomous AI agent orchestration systems. The foundational playbook.</p>
           <div class="features"><span class="feat">10-Page Guide</span><span class="feat">Architecture</span><span class="feat">Patterns</span></div>
-          <div class="card-footer"><span class="price">$29</span><a href="https://shadowcraft41.gumroad.com/l/jyord" class="btn">Get It →</a></div>
+          <div class="card-footer">
+            <div class="price-box"><span class="price">$29</span></div>
+            <a href="https://shadowcraft41.gumroad.com/l/jyord" class="btn">Get It →</a>
+          </div>
         </div>
 
         <div class="card">
@@ -121,7 +161,10 @@
           <h3>MCP Debug Proxy</h3>
           <p>Intercept, log, and replay MCP server traffic. Session recording, latency analysis, JSON export, Mermaid diagrams.</p>
           <div class="features"><span class="feat">Proxy Mode</span><span class="feat">Session Recording</span><span class="feat">Replay</span></div>
-          <div class="card-footer"><span class="price">$1</span><a href="https://shadowcraft41.gumroad.com/l/ypnsof" class="btn">Get It →</a></div>
+          <div class="card-footer">
+            <div class="price-box"><span class="price">$1</span></div>
+            <a href="https://shadowcraft41.gumroad.com/l/ypnsof" class="btn">Get It →</a>
+          </div>
         </div>
 
         <div class="card">
@@ -129,7 +172,10 @@
           <h3>MCP Server Scaffold Generator</h3>
           <p>Generate complete MCP server projects from a single CLI command. HTTP/SSE transport, Docker, FastAPI templates.</p>
           <div class="features"><span class="feat">CLI Tool</span><span class="feat">Docker</span><span class="feat">FastAPI</span></div>
-          <div class="card-footer"><span class="price">$1</span><a href="https://shadowcraft41.gumroad.com/l/djngds" class="btn">Get It →</a></div>
+          <div class="card-footer">
+            <div class="price-box"><span class="price">$1</span></div>
+            <a href="https://shadowcraft41.gumroad.com/l/djngds" class="btn">Get It →</a>
+          </div>
         </div>
 
         <div class="card">
@@ -137,7 +183,10 @@
           <h3>10 AI Agent Failure Modes Checklist</h3>
           <p>Free checklist to bulletproof your autonomous AI agent architecture. Pay-what-you-want.</p>
           <div class="features"><span class="feat">Free</span><span class="feat">Checklist</span><span class="feat">Architecture</span></div>
-          <div class="card-footer"><span class="price">$0+</span><a href="https://shadowcraft41.gumroad.com/l/bjezoo" class="btn">Get It →</a></div>
+          <div class="card-footer">
+            <div class="price-box"><span class="price">$0+</span></div>
+            <a href="https://shadowcraft41.gumroad.com/l/bjezoo" class="btn">Get It →</a>
+          </div>
         </div>
 
       </div>
