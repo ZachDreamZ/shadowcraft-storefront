@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integrating Custom Tools with OpenHands & Flowise — ShadowCraft</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --bg: #09090b; --card: #18181b; --border: #27272a; --text: #fafafa; --muted: #a1a1aa; --accent: #6366f1; --accent-light: #818cf8; --green: #22c55e; --radius: 12px; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { border-bottom: 1px solid var(--border); padding: 20px 24px; }
+    header a { color: var(--text); text-decoration: none; font-weight: 700; font-size: 1.2rem; }
+    .container { max-width: 800px; margin: 0 auto; padding: 60px 24px; }
+    h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 24px; line-height: 1.2; }
+    h2 { font-size: 1.8rem; font-weight: 700; margin: 40px 0 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px;}
+    p { color: var(--muted); font-size: 1.1rem; margin-bottom: 24px; }
+    ul, ol { color: var(--muted); font-size: 1.1rem; margin-bottom: 24px; padding-left: 24px; }
+    li { margin-bottom: 8px; }
+    pre { background: #0c0c0e; border: 1px solid var(--border); padding: 20px; border-radius: 8px; overflow-x: auto; margin-bottom: 24px; font-family: 'JetBrains Mono', monospace; font-size: 14px;}
+    code { font-family: 'JetBrains Mono', monospace; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    .promo-box { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); padding: 32px; border-radius: var(--radius); margin: 40px 0; text-align: center; }
+    .promo-box h3 { color: #fff; font-size: 1.4rem; margin-bottom: 12px; }
+    .btn { display: inline-flex; background: var(--accent); color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; margin-top: 16px; }
+    .btn:hover { background: #4f46e5; }
+    .tag { color: var(--green); font-weight: 700; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html">← ShadowCraft</a>
+  </header>
+  <div class="container">
+    <h1>How to build custom MCP tools for OpenHands and Flowise without crashing your agents</h1>
+    <p>If you're building autonomous systems using the latest open-source frameworks like <strong>OpenHands</strong> (an AI software engineer) or <strong>Flowise</strong> (visual AI workflows), you eventually need to give them access to your custom internal databases and APIs.</p>
+    
+    <p>The standard way to do this is by building a custom <strong>Model Context Protocol (MCP) server</strong>. However, integrating these servers can turn into a nightmare of silent failures.</p>
+
+    <h2>The 3 Silent Killers of Custom MCP Servers</h2>
+    <ol>
+      <li><strong>Raw Exceptions = Infinite Loops:</strong> If your custom tool throws a bare Python exception instead of returning a proper JSON-RPC <code>McpError</code>, the agent framework often swallows the error. OpenHands might enter an infinite retry loop, wasting tokens and execution time.</li>
+      <li><strong>Schema Validation Failures:</strong> If your <code>inputSchema</code> is missing a required <code>type</code> field, the tool simply vanishes from the agent's available tool list. There is usually no error logged.</li>
+      <li><strong>Latency Drops:</strong> If your tool makes an unprofiled database query that exceeds 5 seconds, the LLM client drops the connection.</li>
+    </ol>
+
+    <h2>The Solution: Static & Runtime Validation</h2>
+    <p>Before connecting your custom MCP server to OpenHands or Flowise, you need to validate it. We built the <strong>MCP Linter Pro</strong> to solve this exact problem.</p>
+
+    <div class="promo-box">
+      <h3>MCP Linter Pro</h3>
+      <p style="margin-bottom: 0;">Runtime health checks, automated tool call testing, latency profiling, and protocol compliance checking for your custom MCP servers.</p>
+      <p class="tag" style="margin-bottom: 0; margin-top: 12px;">Use code LAUNCH50 at checkout for 50% off</p>
+      <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="btn">Get MCP Linter Pro</a>
+    </div>
+
+    <h2>How to route multiple tools into OpenHands</h2>
+    <p>If you have multiple MCP servers (e.g., one for Postgres, one for Slack, and one custom internal API), managing the configuration files for OpenHands can be tedious.</p>
+    <p>Instead of manually managing the routing, you can use the <strong>MCP Server Toolkit</strong>. It acts as a universal router that sits between OpenHands and your custom tools, handling JSON-RPC traffic, validating schemas, and preventing infinite retry loops when a tool fails.</p>
+
+    <pre><code>from mcp_router import MCPRouter
+
+router = MCPRouter()
+# Install core servers
+router.install_all()
+
+# Route a tool call to your internal DB safely
+result = router.route("postgres", "query", {
+    "sql": "SELECT * FROM users LIMIT 10"
+})</code></pre>
+
+    <div class="promo-box" style="background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3);">
+      <h3>MCP Server Toolkit</h3>
+      <p style="margin-bottom: 0;">Discover, install, configure, and route requests across 10 production-grade MCP servers with pre-built configs for OpenHands and Flowise.</p>
+      <p class="tag" style="margin-bottom: 0; margin-top: 12px;">Use code MCP30 at checkout for 30% off</p>
+      <a href="https://shadowcraft41.gumroad.com/l/stqlrk" class="btn" style="background: var(--green);">Get MCP Server Toolkit</a>
+    </div>
+
+  </div>
+</body>
+</html>
