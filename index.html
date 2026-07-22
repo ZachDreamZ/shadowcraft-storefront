@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShadowCraft — AI Developer Tools & Security Kits</title>
+  <title>ShadowCraft — AI Developer Tools & B2B Security Kits</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -11,34 +11,25 @@
     body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
     .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
     .hero { text-align: center; padding: 80px 24px 60px; }
-    .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: 16px; }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 800; margin-bottom: 16px; }
     .hero h1 span { color: var(--accent); }
-    .hero p { font-size: 1.1rem; color: var(--muted); max-width: 600px; margin: 0 auto 32px; }
+    .hero p { font-size: 1.15rem; color: var(--muted); max-width: 650px; margin: 0 auto 32px; }
     .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: var(--accent-light); padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 24px; }
-    .promo { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; padding: 12px 24px; border-radius: 8px; font-weight: 600; margin-bottom: 40px; display: inline-block; }
     
-    .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 32px; text-align: center; padding-top: 40px;}
+    .b2b-highlight { background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(99,102,241,0.1)); border: 1px solid rgba(239,68,68,0.4); border-radius: 16px; padding: 48px; margin: 40px auto; max-width: 900px; text-align: center; box-shadow: 0 10px 40px rgba(239,68,68,0.1); }
+    .b2b-highlight h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 16px; color: #fff; }
+    .b2b-highlight p { font-size: 1.1rem; color: var(--muted); margin-bottom: 32px; }
     
-    /* Resources List */
-    .resource-list { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 40px; margin-bottom: 80px; }
-    .resource-item { border-bottom: 1px solid var(--border); padding: 24px 0; display: flex; flex-direction: column; gap: 8px;}
-    .resource-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .resource-item:first-child { padding-top: 0; }
-    .res-title { font-size: 1.2rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 12px;}
-    .res-desc { color: var(--muted); font-size: 15px; }
-    .res-link { color: var(--accent-light); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-    .res-link:hover { text-decoration: underline; }
-    .github-icon { width: 20px; height: 20px; fill: currentColor; }
-
-    /* Products Grid */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-bottom: 80px;}
+    .products { padding: 40px 0 80px; }
+    .products h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 32px; text-align: center; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
     .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; }
     .card:hover { border-color: rgba(99,102,241,0.5); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(99,102,241,0.1); }
     .card-tag { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; align-self: flex-start; }
     .tag-security { background: rgba(239,68,68,0.12); color: #f87171; }
     .tag-mcp { background: rgba(34,197,94,0.12); color: #4ade80; }
     .tag-ai { background: rgba(99,102,241,0.12); color: var(--accent-light); }
-    .tag-content { background: rgba(234,179,8,0.12); color: #facc15; }
+    .tag-b2b { background: linear-gradient(90deg, #f87171, #818cf8); color: #fff; border: none; }
     .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
     .card p { color: var(--muted); font-size: 14px; margin-bottom: 16px; line-height: 1.5; flex-grow: 1; }
     .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
@@ -47,99 +38,52 @@
     .discount { font-size: 12px; color: var(--green); font-weight: 600; }
     .btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 8px; text-decoration: none; transition: all 0.2s; }
     .btn:hover { background: #4f46e5; transform: translateY(-1px); }
+    .btn-b2b { background: linear-gradient(90deg, #ef4444, #6366f1); padding: 14px 28px; font-size: 16px;}
+    .btn-b2b:hover { transform: scale(1.05); }
     .features { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
     .feat { font-size: 12px; color: var(--muted); background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px; }
-    .cta { text-align: center; padding: 0px 24px 80px; }
-    .cta h2 { font-size: 2rem; font-weight: 800; margin-bottom: 12px; }
-    .cta p { color: var(--muted); margin-bottom: 24px; }
-    .stats { display: flex; justify-content: center; gap: 48px; padding: 40px 0; }
-    .stat-num { font-size: 2rem; font-weight: 800; }
-    .stat-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
     footer { text-align: center; padding: 40px 24px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
-    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .stats { gap: 24px; } }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <div class="hero">
-    <div class="badge">AI Developer Tools</div>
-    <h1>Ship <span>Production AI</span> with Confidence</h1>
-    <p>Security toolkits, MCP server tools, and agent frameworks used by developers building autonomous AI systems.</p>
-    <div class="promo">🚀 Use code <strong>LAUNCH50</strong> at checkout for 50% off MCP Linter Pro!</div>
-    <div class="stats">
-      <div><div class="stat-num">10</div><div class="stat-label">Products</div></div>
-      <div><div class="stat-num">50+</div><div class="stat-label">Tools &amp; Scripts</div></div>
-      <div><div class="stat-num">$1-49</div><div class="stat-label">Price Range</div></div>
-    </div>
+    <div class="badge">AI Automation & B2B Services</div>
+    <h1>Build Autonomous <span>Revenue Engines</span></h1>
+    <p>We provide the backend frameworks and automation scripts to help you launch highly profitable B2B agencies and AI products.</p>
   </div>
 
   <div class="container">
-
-    <!-- Free Resources Section Added -->
-    <h2 class="section-title">Free Resources: 10 Repos to Automate Work & Income</h2>
-    <p style="text-align: center; color: var(--muted); margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto;">
-      Building with these repos? Make sure you validate your custom MCP servers with <a href="#products" style="color: var(--accent-light);">MCP Linter Pro</a> so your agents don't silently crash.
-    </p>
     
-    <div class="resource-list">
-      <div class="resource-item">
-        <div class="res-title">1. AutoHedge</div>
-        <div class="res-desc">AI-powered autonomous trading framework with multi-agent automation.</div>
-        <a href="https://github.com/The-Swarm-Corporation/AutoHedge" class="res-link">github.com/The-Swarm-Corporation/AutoHedge</a>
+    <div class="b2b-highlight">
+      <h2>Launch a $500/mo Cybersecurity Agency Today.</h2>
+      <p>Stop selling $9 scripts. Start selling high-ticket B2B retainers. The <strong>ShieldOps Agency Blueprint</strong> uses the official Malwarebytes Threat Intelligence API to automatically generate Brand Protection and Typosquatting reports for SaaS companies.</p>
+      <div style="display:flex; justify-content:center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
+        <span class="feat" style="font-size: 14px; padding: 6px 12px;">✅ Automated Python Threat Scanners</span>
+        <span class="feat" style="font-size: 14px; padding: 6px 12px;">✅ High-Converting Cold Email Sequences</span>
+        <span class="feat" style="font-size: 14px; padding: 6px 12px;">✅ Agency Pricing Models</span>
       </div>
-      <div class="resource-item">
-        <div class="res-title">2. Vibe-Trading</div>
-        <div class="res-desc">An AI trading assistant for market research, backtesting, and portfolio analysis.</div>
-        <a href="https://github.com/HKUDS/Vibe-Trading" class="res-link">github.com/HKUDS/Vibe-Trading</a>
-      </div>
-      <div class="resource-item">
-        <div class="res-title">3. OpenHands</div>
-        <div class="res-desc">An open-source AI software engineer that writes code, fixes bugs, and automates development.</div>
-        <a href="https://github.com/All-Hands-AI/OpenHands" class="res-link">github.com/All-Hands-AI/OpenHands</a>
-      </div>
-      <div class="resource-item">
-        <div class="res-title">4. Agentic Inbox</div>
-        <div class="res-desc">Turn your inbox into an AI-powered assistant that reads, organizes, and replies to emails.</div>
-        <a href="https://github.com/cloudflare/agentic-inbox" class="res-link">github.com/cloudflare/agentic-inbox</a>
-      </div>
-      <div class="resource-item">
-        <div class="res-title">5. Fincept Terminal</div>
-        <div class="res-desc">A modern financial research terminal packed with market analysis tools.</div>
-        <a href="https://github.com/Fincept-Corporation/FinceptTerminal" class="res-link">github.com/Fincept-Corporation/FinceptTerminal</a>
-      </div>
-      <div class="resource-item">
-        <div class="res-title">6. Camofox</div>
-        <div class="res-desc">A stealth browser built for reliable web automation and data collection.</div>
-        <a href="https://github.com/daijro/camoufox" class="res-link">github.com/daijro/camoufox</a>
-      </div>
-      <div class="resource-item">
-        <div class="res-title">7. Toprank</div>
-        <div class="res-desc">An AI-powered SEO toolkit to help websites rank higher and grow organic traffic.</div>
-        <a href="https://github.com/nowork-studio/toprank" class="res-link">github.com/nowork-studio/toprank</a>
-      </div>
-      <div class="resource-item">
-        <div class="res-title">8. Hyperframes</div>
-        <div class="res-desc">Create personalized AI videos at scale for marketing and outreach.</div>
-        <a href="https://github.com/heygen-com/hyperframes" class="res-link">github.com/heygen-com/hyperframes</a>
-      </div>
-      <div class="resource-item">
-        <div class="res-title">9. AutoAgent</div>
-        <div class="res-desc">Build powerful AI agents using simple natural language instructions.</div>
-        <a href="https://github.com/HKUDS/AutoAgent" class="res-link">github.com/HKUDS/AutoAgent</a>
-      </div>
-      <div class="resource-item">
-        <div class="res-title">10. Flowise</div>
-        <div class="res-desc">Design AI apps and chatbots visually with drag-and-drop workflows.</div>
-        <a href="https://github.com/FlowiseAI/Flowise" class="res-link">github.com/FlowiseAI/Flowise</a>
-      </div>
+      <a href="https://shadowcraft41.gumroad.com/l/bmyimh" class="btn btn-b2b">Get the Agency Blueprint Included in AI Growth Ops ($49) →</a>
     </div>
 
-    <section class="products" id="products">
-      <h2 class="section-title" style="padding-top: 0;">Developer Tools & Kits</h2>
+    <section class="products">
+      <h2>All Developer Kits</h2>
       <div class="grid">
 
-        <div class="card" style="border-color: rgba(34,197,94,0.4); box-shadow: 0 0 20px rgba(34,197,94,0.1);">
+        <div class="card" style="border-color: rgba(239,68,68,0.4);">
+          <div class="card-tag tag-b2b">Agency In-A-Box</div>
+          <h3>AI Growth Ops Framework + ShieldOps</h3>
+          <p>The complete blueprint for outbound sales and marketing automation. Now includes the full B2B Cybersecurity Agency (Malwarebytes MCP) module.</p>
+          <div class="features"><span class="feat">Malwarebytes Intel</span><span class="feat">Cold Email</span><span class="feat">Playwright</span></div>
+          <div class="card-footer">
+            <div class="price-box"><span class="price">$49</span></div>
+            <a href="https://shadowcraft41.gumroad.com/l/bmyimh" class="btn">Get It →</a>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(34,197,94,0.4);">
           <div class="card-tag tag-mcp">Featured MCP Tool</div>
-          <h3>MCP Server Linter Pro — Runtime Validation</h3>
+          <h3>MCP Server Linter Pro</h3>
           <p>Runtime health checks, tool call testing, latency profiling, protocol compliance, and batch mode for MCP servers.</p>
           <div class="features"><span class="feat">Health Checks</span><span class="feat">Tool Testing</span><span class="feat">CI/CD Integration</span></div>
           <div class="card-footer">
@@ -147,7 +91,7 @@
               <span class="price">$9</span>
               <span class="discount">Code: LAUNCH50</span>
             </div>
-            <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="btn" style="background: var(--green);">Get It 50% Off →</a>
+            <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="btn" style="background: var(--green);">Get It →</a>
           </div>
         </div>
 
@@ -157,10 +101,7 @@
           <p>Automated security scanner, 200+ prompt injection payloads, Lakera-style guardrails, and vulnerability audit engine.</p>
           <div class="features"><span class="feat">RedTeamScanner</span><span class="feat">200+ Payloads</span><span class="feat">Risk Scoring</span></div>
           <div class="card-footer">
-            <div class="price-box">
-              <span class="price">$19</span>
-              <span class="discount">Code: SECURE30</span>
-            </div>
+            <div class="price-box"><span class="price">$19</span></div>
             <a href="https://shadowcraft41.gumroad.com/l/zzdvj" class="btn">Get It →</a>
           </div>
         </div>
@@ -168,13 +109,10 @@
         <div class="card">
           <div class="card-tag tag-ai">AI Agents</div>
           <h3>Production Context Engineering &amp; Memory Kit</h3>
-          <p>Dynamic prompt compiler, token budget engine, Claude XML formatters, and vector memory schemas for Cursor, Claude Code, and LangGraph.</p>
-          <div class="features"><span class="feat">Memory Architectures</span><span class="feat">RAG Blueprints</span><span class="feat">Context Calibration</span></div>
+          <p>Dynamic prompt compiler, token budget engine, and vector memory schemas for Cursor, Claude Code, and LangGraph.</p>
+          <div class="features"><span class="feat">Memory Architectures</span><span class="feat">RAG Blueprints</span></div>
           <div class="card-footer">
-            <div class="price-box">
-              <span class="price">$19</span>
-              <span class="discount">Code: CONTEXT30</span>
-            </div>
+            <div class="price-box"><span class="price">$19</span></div>
             <a href="https://shadowcraft41.gumroad.com/l/mgncch" class="btn">Get It →</a>
           </div>
         </div>
@@ -182,8 +120,8 @@
         <div class="card">
           <div class="card-tag tag-mcp">MCP Tools</div>
           <h3>MCP Server Toolkit — Universal Router &amp; Manager</h3>
-          <p>Discover, install, configure, and route requests across 10 production-grade MCP servers. Pre-built configs for Claude Desktop, Cursor, and Windsurf.</p>
-          <div class="features"><span class="feat">5 Router Patterns</span><span class="feat">Cursor Rules</span><span class="feat">Memory Guidelines</span></div>
+          <p>Discover, install, configure, and route requests across 10 production-grade MCP servers.</p>
+          <div class="features"><span class="feat">5 Router Patterns</span><span class="feat">Cursor Rules</span></div>
           <div class="card-footer">
             <div class="price-box">
               <span class="price">$19</span>
@@ -194,26 +132,12 @@
         </div>
 
         <div class="card">
-          <div class="card-tag tag-ai">AI Growth</div>
-          <h3>AI Growth Ops Framework</h3>
-          <p>Production-ready Python Playwright scripts to automatically post on X, LinkedIn, Dev.to, and Hacker News.</p>
-          <div class="features"><span class="feat">Marketing Agents</span><span class="feat">Playwright</span><span class="feat">Growth Scripts</span></div>
-          <div class="card-footer">
-            <div class="price-box"><span class="price">$49</span></div>
-            <a href="https://shadowcraft41.gumroad.com/l/bmyimh" class="btn">Get It →</a>
-          </div>
-        </div>
-
-        <div class="card">
           <div class="card-tag tag-content">Content</div>
           <h3>AI Content Studio — 100+ Prompts</h3>
           <p>Video and image generation prompt library for creators building AI-powered content pipelines.</p>
-          <div class="features"><span class="feat">100+ Prompts</span><span class="feat">Video Gen</span><span class="feat">Image Gen</span></div>
+          <div class="features"><span class="feat">Video Gen</span><span class="feat">Image Gen</span></div>
           <div class="card-footer">
-            <div class="price-box">
-              <span class="price">$19</span>
-              <span class="discount">Code: CREATE40</span>
-            </div>
+            <div class="price-box"><span class="price">$19</span></div>
             <a href="https://shadowcraft41.gumroad.com/l/ctqdzy" class="btn">Get It →</a>
           </div>
         </div>
@@ -222,55 +146,15 @@
           <div class="card-tag tag-ai">Agents</div>
           <h3>Autonomous AI Agent Orchestration Guide</h3>
           <p>Comprehensive guide on building autonomous AI agent orchestration systems. The foundational playbook.</p>
-          <div class="features"><span class="feat">10-Page Guide</span><span class="feat">Architecture</span><span class="feat">Patterns</span></div>
           <div class="card-footer">
             <div class="price-box"><span class="price">$29</span></div>
             <a href="https://shadowcraft41.gumroad.com/l/jyord" class="btn">Get It →</a>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-tag tag-mcp">MCP Tools</div>
-          <h3>MCP Debug Proxy</h3>
-          <p>Intercept, log, and replay MCP server traffic. Session recording, latency analysis, JSON export, Mermaid diagrams.</p>
-          <div class="features"><span class="feat">Proxy Mode</span><span class="feat">Session Recording</span><span class="feat">Replay</span></div>
-          <div class="card-footer">
-            <div class="price-box"><span class="price">$1</span></div>
-            <a href="https://shadowcraft41.gumroad.com/l/ypnsof" class="btn">Get It →</a>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-tag tag-mcp">MCP Tools</div>
-          <h3>MCP Server Scaffold Generator</h3>
-          <p>Generate complete MCP server projects from a single CLI command. HTTP/SSE transport, Docker, FastAPI templates.</p>
-          <div class="features"><span class="feat">CLI Tool</span><span class="feat">Docker</span><span class="feat">FastAPI</span></div>
-          <div class="card-footer">
-            <div class="price-box"><span class="price">$1</span></div>
-            <a href="https://shadowcraft41.gumroad.com/l/djngds" class="btn">Get It →</a>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-tag tag-ai">Free</div>
-          <h3>10 AI Agent Failure Modes Checklist</h3>
-          <p>Free checklist to bulletproof your autonomous AI agent architecture. Pay-what-you-want.</p>
-          <div class="features"><span class="feat">Free</span><span class="feat">Checklist</span><span class="feat">Architecture</span></div>
-          <div class="card-footer">
-            <div class="price-box"><span class="price">$0+</span></div>
-            <a href="https://shadowcraft41.gumroad.com/l/bjezoo" class="btn">Get It →</a>
-          </div>
-        </div>
-
       </div>
     </section>
   </div>
-
-  <section class="cta">
-    <h2>Browse All on Gumroad</h2>
-    <p>Every product is a one-time purchase with lifetime updates. No subscriptions.</p>
-    <a href="https://shadowcraft41.gumroad.com" class="btn" style="font-size:16px; padding: 14px 32px;">ShadowCraft on Gumroad →</a>
-  </section>
 
   <footer>
     <p>Built by <a href="https://github.com/ZachDreamZ" style="color:var(--accent-light);">ZachDreamZ</a> · All products are one-time purchases with lifetime updates.</p>
