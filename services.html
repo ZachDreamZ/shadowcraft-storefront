@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Automation & Security Services — ShadowCraft</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --bg: #F6F1E8; --surface: #FBF7EF; --white: #FFFFFF; --border: #E2D9C8; --ink: #1F2421; --muted: #8A8A80; --accent: #C8853F; --accent-hover: #A86B2C; --tint: #F0E3D0; --dark-block: #2A2723; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    header { padding: 20px 0; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; backdrop-filter: blur(8px); z-index: 100; }
+    header .container { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: 'DM Serif Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--ink); }
+    .hero { padding: 80px 24px 60px; text-align: center; }
+    .eyebrow { display: inline-block; background: var(--tint); color: var(--accent); padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+    h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 700; line-height: 1.1; margin-bottom: 24px; }
+    h1 em { color: var(--accent); font-style: italic; }
+    .subtitle { font-size: 1.2rem; color: var(--muted); max-width: 650px; margin: 0 auto 40px; }
+    .services { padding: 60px 0; }
+    .service-card { background: var(--white); border: 2px solid var(--border); border-radius: 16px; padding: 40px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: all 0.3s ease; }
+    .service-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 8px 24px rgba(200,133,63,0.15); }
+    .service-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
+    h2 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .pricing { text-align: right; }
+    .price { font-size: 2rem; font-weight: 700; color: var(--accent); }
+    .delivery { font-size: 0.9rem; color: var(--muted); }
+    .features { list-style: none; margin: 20px 0; }
+    .features li { padding: 8px 0; padding-left: 28px; position: relative; color: var(--ink); }
+    .features li::before { content: '✓'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+    .perfect-for { background: var(--tint); padding: 20px; border-radius: 12px; margin: 20px 0; }
+    .perfect-for h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); margin-bottom: 12px; }
+    .perfect-for ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+    .perfect-for li { font-size: 0.95rem; color: var(--ink); }
+    .cta-btn { display: inline-block; background: var(--accent); color: var(--white); font-weight: 600; padding: 14px 32px; border-radius: 8px; text-decoration: none; transition: all 0.3s; font-size: 1rem; }
+    .cta-btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,133,63,0.3); }
+    .dark-section { background: var(--dark-block); color: var(--white); padding: 80px 24px; margin: 60px 0; border-radius: 24px; text-align: center; }
+    .dark-section h2 { color: var(--white); margin-bottom: 16px; }
+    .dark-section p { color: var(--tint); font-size: 1.1rem; margin-bottom: 32px; }
+    footer { text-align: center; padding: 40px 24px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">ShadowCraft</div>
+      <a href="https://shadowcraft41.gumroad.com" class="cta-btn">View Products</a>
+    </div>
+  </header>
+
+  <div class="hero">
+    <span class="eyebrow">Professional Services</span>
+    <h1>AI Automation & <em>Security Services</em></h1>
+    <p class="subtitle">Custom AI agents, MCP servers, brand security monitoring, and trading bots built by experts. From \ to \/month retainers.</p>
+  </div>
+
+  <div class="container services">
+    
+    <div class="service-card">
+      <div class="service-header">
+        <div>
+          <h2>AI Agent Automation Setup</h2>
+          <p style="color: var(--muted); font-size: 0.95rem;">Custom AI agents that actually work in production</p>
+        </div>
+        <div class="pricing">
+          <div class="price">\–\</div>
+          <div class="delivery">3-7 days delivery</div>
+        </div>
+      </div>
+      
+      <ul class="features">
+        <li>Custom AI agent built with Claude, GPT-4, or DeepSeek</li>
+        <li>Automated workflow integration (email, Slack, webhooks, APIs)</li>
+        <li>MCP server setup for tool connectivity</li>
+        <li>Complete documentation and handoff guide</li>
+        <li>1 week of post-delivery support</li>
+      </ul>
+
+      <div class="perfect-for">
+        <h3>Perfect For</h3>
+        <ul>
+          <li>• SaaS founders automating support</li>
+          <li>• Marketing teams generating content</li>
+          <li>• Operations automating data entry</li>
+          <li>• Developers building AI features</li>
+        </ul>
+      </div>
+
+      <a href="mailto:shadowcraft.ai@proton.me?subject=AI%20Agent%20Automation%20Inquiry" class="cta-btn">Get Started</a>
+    </div>
+
+    <div class="service-card">
+      <div class="service-header">
+        <div>
+          <h2>MCP Server Development</h2>
+          <p style="color: var(--muted); font-size: 0.95rem;">Production-ready Model Context Protocol servers</p>
+        </div>
+        <div class="pricing">
+          <div class="price">\–\</div>
+          <div class="delivery">5-10 days delivery</div>
+        </div>
+      </div>
+      
+      <ul class="features">
+        <li>Custom Model Context Protocol (MCP) server</li>
+        <li>Integration with your APIs, databases, or tools</li>
+        <li>TypeScript or Python implementation</li>
+        <li>Published to Glama MCP registry (optional)</li>
+        <li>CI/CD validation setup with GitHub Actions</li>
+        <li>Full documentation and examples</li>
+      </ul>
+
+      <div class="perfect-for">
+        <h3>Perfect For</h3>
+        <ul>
+          <li>• Companies building AI ecosystems</li>
+          <li>• Developers extending Claude Desktop</li>
+          <li>• Teams needing custom tool connectivity</li>
+          <li>• Startups building AI-first products</li>
+        </ul>
+      </div>
+
+      <a href="mailto:shadowcraft.ai@proton.me?subject=MCP%20Server%20Development%20Inquiry" class="cta-btn">Get Started</a>
+    </div>
+
+    <div class="service-card" style="border: 3px solid var(--accent);">
+      <div class="service-header">
+        <div>
+          <h2>ShieldOps Brand Security Monitoring</h2>
+          <p style="color: var(--muted); font-size: 0.95rem;">Protect your brand from impersonation and phishing attacks</p>
+        </div>
+        <div class="pricing">
+          <div class="price">\/mo</div>
+          <div class="delivery">Continuous monitoring</div>
+        </div>
+      </div>
+      
+      <ul class="features">
+        <li>Typosquatting domain monitoring (24/7)</li>
+        <li>Executive phishing detection</li>
+        <li>Brand impersonation alerts</li>
+        <li>WHOIS change monitoring</li>
+        <li>Monthly Brand Exposure Report</li>
+        <li>Slack or email alerts</li>
+        <li>Remediation guidance and support</li>
+      </ul>
+
+      <div class="perfect-for">
+        <h3>Perfect For</h3>
+        <ul>
+          <li>• SaaS companies with growing brands</li>
+          <li>• Fintech and healthcare companies</li>
+          <li>• E-commerce platforms</li>
+          <li>• Companies with remote teams</li>
+        </ul>
+      </div>
+
+      <p style="background: var(--tint); padding: 12px; border-radius: 8px; margin: 20px 0; font-size: 0.95rem;"><strong>Free Trial:</strong> First month includes a Free Brand Exposure Report showing current risks.</p>
+
+      <a href="mailto:shadowcraft.ai@proton.me?subject=ShieldOps%20Free%20Brand%20Report" class="cta-btn">Get Free Report</a>
+    </div>
+
+    <div class="service-card">
+      <div class="service-header">
+        <div>
+          <h2>Trading Bot Development & Signals</h2>
+          <p style="color: var(--muted); font-size: 0.95rem;">Automated trading strategies and daily market signals</p>
+        </div>
+        <div class="pricing">
+          <div class="price">\–\,000</div>
+          <div class="delivery">or \/mo signals</div>
+        </div>
+      </div>
+      
+      <ul class="features">
+        <li>Custom trading bot (Binance, Alpaca, Interactive Brokers)</li>
+        <li>Technical indicator analysis (RSI, SMA, MACD, Bollinger Bands)</li>
+        <li>Backtesting on historical data</li>
+        <li>Paper trading setup and testing</li>
+        <li>Risk management rules</li>
+        <li>Daily signal reports (subscription)</li>
+      </ul>
+
+      <div class="perfect-for">
+        <h3>Perfect For</h3>
+        <ul>
+          <li>• Crypto traders automating strategies</li>
+          <li>• Stock traders needing analysis</li>
+          <li>• Quant researchers testing ideas</li>
+          <li>• Investors wanting data-driven signals</li>
+        </ul>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--muted); margin: 20px 0;"><em>Note: No financial advice provided. For educational and automation purposes only.</em></p>
+
+      <a href="mailto:shadowcraft.ai@proton.me?subject=Trading%20Bot%20Inquiry" class="cta-btn">Get Started</a>
+    </div>
+
+  </div>
+
+  <div class="container">
+    <div class="dark-section">
+      <h2>Need something custom?</h2>
+      <p>We build custom AI automation solutions, security tools, and data pipelines. Tell us what you need.</p>
+      <a href="mailto:shadowcraft.ai@proton.me?subject=Custom%20Project%20Inquiry" class="cta-btn">Contact Us</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 ShadowCraft AI. All rights reserved.</p>
+    <p style="margin-top: 8px;"><a href="https://shadowcraft41.gumroad.com" style="color: var(--accent); text-decoration: none;">View Digital Products</a> · <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="color: var(--accent); text-decoration: none;">Documentation</a></p>
+  </footer>
+</body>
+</html>
