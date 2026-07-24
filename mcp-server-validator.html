@@ -3,196 +3,617 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MCP Server Validator — Free Tool | ShadowCraft</title>
-<meta name="description" content="Free online tool to validate your MCP server configuration. Check protocol compliance, schema validity, and transport settings instantly.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=SF+Mono&display=swap" rel="stylesheet">
+<title>MCP Server Validator — Test Real Servers | ShadowCraft</title>
+<meta name="description" content="Validate and test your MCP server configuration. Connect to real servers, run the JSON-RPC handshake, and test tool calls.">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #FFFFFF;
-    --fg: #1D1D1F;
-    --fg-secondary: #86868B;
-    --fg-tertiary: #AEAEB2;
-    --border: #E5E5EA;
-    --border-focus: #0071E3;
-    --accent: #0071E3;
-    --accent-hover: #0077ED;
-    --surface: #F5F5F7;
-    --pass: #34C759;
-    --warn: #FF9500;
-    --fail: #FF3B30;
-    --radius: 12px;
-    --radius-sm: 8px;
-    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
-    --mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-  }
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--fg);
-    line-height: 1.47059;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  textarea:focus, button:focus-visible, a:focus-visible {
-    outline: 2px solid var(--border-focus);
-    outline-offset: 2px;
+    --bg: #FAFAFA; --fg: #0A0A0A; --fg2: #71717A; --fg3: #A1A1AA;
+    --border: #E4E4E7; --surface: #FFFFFF; --surface2: #F4F4F5;
+    --accent: #18181B; --accent-fg: #FAFAFA;
+    --pass: #16A34A; --warn: #D97706; --fail: #DC2626;
+    --r: 12px; --rs: 8px;
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Helvetica Neue', sans-serif;
+    --mono: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #000000;
-      --fg: #F5F5F7;
-      --fg-secondary: #86868B;
-      --fg-tertiary: #6E6E73;
-      --border: #38383A;
-      --surface: #1C1C1E;
-      --accent: #2997FF;
-      --accent-hover: #409CFF;
+      --bg: #09090B; --fg: #FAFAFA; --fg2: #A1A1AA; --fg3: #52525B;
+      --border: #27272A; --surface: #18181B; --surface2: #27272A;
+      --accent: #FAFAFA; --accent-fg: #09090B;
     }
+  }
+  body { font-family: var(--font); background: var(--bg); color: var(--fg); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+  /* ── Buttons — shadcn glass ── */
+  .btn {
+    position: relative;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: var(--font); font-weight: 500; font-size: 13px;
+    padding: 9px 18px; border-radius: 10px; border: none;
+    cursor: pointer; user-select: none;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none; overflow: hidden;
+  }
+  .btn::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: radial-gradient(circle at var(--ripple-x, 50%) var(--ripple-y, 50%), rgba(255,255,255,0.35) 0%, transparent 70%);
+    opacity: 0; transition: opacity 0.4s ease-out;
+    pointer-events: none;
+  }
+  .btn.ripple-active::after { opacity: 1; transition: opacity 0s; }
+  .btn:active { transform: scale(0.955) !important; transition-duration: 0.08s; }
+  .btn:focus-visible { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+  .btn:disabled:hover { transform: none !important; }
+
+  /* Primary — solid dark/light with glass inner glow */
+  .btn-primary {
+    background: var(--accent); color: var(--accent-fg);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04) inset, 0 1px 0 rgba(255,255,255,0.06) inset;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent) 90%, var(--fg));
+    box-shadow: 0 6px 20px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06) inset, 0 1px 0 rgba(255,255,255,0.1) inset;
+    transform: translateY(-1px);
+  }
+  .btn-primary:active:not(:disabled) {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12), inset 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  /* Secondary — frosted glass */
+  .btn-secondary {
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    color: var(--fg); border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--surface) 60%, var(--surface2));
+    border-color: color-mix(in srgb, var(--border) 40%, var(--fg3));
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.06) inset;
+    transform: translateY(-1px);
+  }
+  .btn-secondary:active:not(:disabled) {
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.1);
+  }
+
+  /* Ghost — minimal hover */
+  .btn-ghost {
+    background: transparent; color: var(--fg2);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--surface2) 60%, transparent);
+    color: var(--fg);
+  }
+
+  /* Destructive */
+  .btn-destructive {
+    background: var(--fail); color: #fff;
+    box-shadow: 0 1px 3px rgba(220,38,38,0.25), 0 0 0 1px rgba(220,38,38,0.1) inset, 0 1px 0 rgba(255,255,255,0.1) inset;
+  }
+  .btn-destructive:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--fail) 88%, white);
+    box-shadow: 0 6px 20px rgba(220,38,38,0.35), 0 0 0 1px rgba(220,38,38,0.15) inset, 0 1px 0 rgba(255,255,255,0.15) inset;
+    transform: translateY(-1px);
+  }
+
+  /* Success */
+  .btn-success {
+    background: var(--pass); color: #fff;
+    box-shadow: 0 1px 3px rgba(22,163,74,0.25), 0 0 0 1px rgba(22,163,74,0.1) inset, 0 1px 0 rgba(255,255,255,0.1) inset;
+  }
+  .btn-success:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--pass) 88%, white);
+    box-shadow: 0 6px 20px rgba(22,163,74,0.35);
+    transform: translateY(-1px);
+  }
+
+  /* ── Glass pill tabs ── */
+  .tab-btn {
+    font-family: var(--font); font-size: 13px; font-weight: 500;
+    padding: 8px 20px; border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
+    color: var(--fg2);
+    backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    cursor: pointer; transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(255,255,255,0.03) inset;
+  }
+  .tab-btn:hover { border-color: var(--fg3); color: var(--fg); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .tab-btn:active { transform: scale(0.955); transition-duration: 0.08s; }
+  .tab-btn.active {
+    background: var(--accent); color: var(--accent-fg);
+    border-color: var(--accent);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.06) inset, 0 1px 0 rgba(255,255,255,0.08) inset;
+    backdrop-filter: blur(20px) saturate(1.6);
+  }
+  .tab-btn.active:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.25); transform: translateY(-0.5px); }
+
+  /* Glass pill tabs */
+  .tab-btn {
+    font-family: var(--font); font-size: 13px; font-weight: 500;
+    padding: 7px 16px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--fg2);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .tab-btn:hover { border-color: var(--fg3); color: var(--fg); transform: translateY(-0.5px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .tab-btn:active { transform: scale(0.97); }
+  .tab-btn.active {
+    background: var(--accent); color: var(--accent-fg); border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .tab-btn.active:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+
+  /* ── Layout ── */
+  .card { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); }
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.01em; }
+  .badge-pass { background: rgba(22,163,74,0.1); color: var(--pass); }
+  .badge-warn { background: rgba(217,119,6,0.1); color: var(--warn); }
+  .badge-fail { background: rgba(220,38,38,0.1); color: var(--fail); }
+  .badge-info { background: var(--surface2); color: var(--fg2); border: 1px solid var(--border); }
+  .mono { font-family: var(--mono); font-size: 12px; }
+
+  /* Log */
+  .log { font-family: var(--mono); font-size: 12px; line-height: 1.8; background: var(--surface); border: 1px solid var(--border); border-radius: var(--rs); padding: 16px; max-height: 320px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+  .log .ts { color: var(--fg3); }
+  .log .send { color: var(--accent); font-weight: 500; }
+  .log .recv { color: var(--pass); }
+  .log .err { color: var(--fail); }
+  .log .info { color: var(--fg2); }
+
+  /* Tool cards */
+  .tool-card { padding: 16px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  .tool-card:hover .tool-name { color: var(--fg); }
+  .tool-card:hover { background: var(--surface2); }
+  .tool-card:last-child { border-bottom: none; border-radius: 0 0 var(--r) var(--r); }
+  .tool-name { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent); }
+  .tool-desc { font-size: 13px; color: var(--fg2); margin-top: 4px; }
+  .tool-schema { font-family: var(--mono); font-size: 11px; color: var(--fg3); margin-top: 8px; padding: 8px 12px; background: var(--surface2); border-radius: 6px; border: 1px solid var(--border); }
+
+  /* Spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--fg); border-radius: 50%; animation: spin 0.5s linear infinite; }
+
+  /* Ripple — radial flash on click */
+  @keyframes btn-flash { 0% { opacity: 0.5; } 100% { opacity: 0; } }
+  .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.4); transform: scale(0); animation: ripple-anim 0.55s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; filter: blur(1px); }
+  @keyframes ripple-anim { to { transform: scale(3.5); opacity: 0; } }
+  /* ── Modern entrance animations ── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-down {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(24,24,27,0); }
+    50% { box-shadow: 0 0 24px 4px rgba(24,24,27,0.08); }
+  }
+  @media (prefers-color-scheme: dark) {
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(250,250,250,0); }
+      50% { box-shadow: 0 0 24px 4px rgba(250,250,250,0.06); }
+    }
+  }
+  @keyframes border-glow {
+    0%, 100% { border-color: var(--border); }
+    50% { border-color: color-mix(in srgb, var(--accent) 30%, var(--border)); }
+  }
+
+  .anim-fade-up { animation: fade-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
+  .anim-fade-in { animation: fade-in 0.4s ease both; }
+  .anim-scale-in { animation: scale-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) both; }
+  .anim-d1 { animation-delay: 0.05s; }
+  .anim-d2 { animation-delay: 0.1s; }
+  .anim-d3 { animation-delay: 0.15s; }
+  .anim-d4 { animation-delay: 0.2s; }
+  .anim-d5 { animation-delay: 0.25s; }
+
+  /* Card hover lift + glow */
+  .card {
+    border: 1px solid var(--border); border-radius: var(--r); background: var(--surface);
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  }
+  .card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    transform: translateY(-2px);
+  }
+  @media (prefers-color-scheme: dark) {
+    .card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.15);
+    }
+  }
+
+  /* Button shimmer on hover */
+  .btn-primary::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+    background-size: 200% 100%; opacity: 0;
+    transition: opacity 0.3s ease; pointer-events: none;
+  }
+  .btn-primary:hover::before { opacity: 1; animation: shimmer 1.5s ease infinite; }
+
+  /* Tab switch animation */
+  #mode-config, #mode-live {
+    animation: scale-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  /* Tool card hover micro-interaction */
+  .tool-card {
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    border-left: 2px solid transparent;
+  }
+  .tool-card:hover .tool-name { color: var(--fg); }
+  .tool-card:hover {
+    transform: translateX(2px);
+    border-left-color: var(--accent);
+  }
+
+  /* Log entry animation */
+  .log > span:last-child {
+    animation: fade-in 0.15s ease;
+  }
+
+  /* Textarea focus glow */
+  textarea:focus, input:focus, select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent),
+                0 0 16px color-mix(in srgb, var(--accent) 5%, transparent);
+    transition: border-color 0.2s ease, box-shadow 0.3s ease;
+  }
+
+  /* Badge hover */
+  .badge {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .badge:hover {
+    transform: scale(1.05);
+  }
+
+  /* Nav blur enhanced */
+  nav {
+    transition: box-shadow 0.3s ease;
+  }
+  nav.scrolled {
+    box-shadow: 0 1px 16px rgba(0,0,0,0.06);
+  }
+
+  /* Pro section pulse */
+  #pro-section {
+    position: relative;
+    overflow: hidden;
+  }
+  #pro-section::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.2;
+  }
+
+  /* Success state animation */
+  .status-connected {
+    animation: glow-pulse 2s ease-in-out 1;
+  }
+
+  /* Button icon rotation on hover */
+  .btn:hover svg {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-primary:hover svg {
+    transform: translateX(2px);
+  }
+  .btn-destructive:hover svg {
+    transform: rotate(90deg);
+  }
+
+  /* Smooth number counter feel */
+  strong {
+    transition: color 0.2s ease;
+  }
+
+  /* Success shake for connect button */
+  @keyframes pulse-success { 0%,100% { box-shadow: 0 0 0 0 rgba(22,163,74,0.4); } 50% { box-shadow: 0 0 0 8px rgba(22,163,74,0); } }
+  .btn-pulse { animation: pulse-success 0.6s ease-out; }
+
+  /* Smooth scrollbar */
+  .log::-webkit-scrollbar { width: 6px; }
+  .log::-webkit-scrollbar-track { background: transparent; }
+  .log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Input focus */
+  input:focus, textarea:focus, select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
   }
 </style>
 </head>
 <body>
 
-<!-- Nav -->
-<nav style="position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);">
-  <div style="max-width:720px;margin:0 auto;padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;">
+<nav style="position:sticky;top:0;z-index:50;background:color-mix(in srgb, var(--bg) 80%, transparent);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+  <div style="max-width:780px;margin:0 auto;padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;">
     <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="font-size:15px;font-weight:600;color:var(--fg);text-decoration:none;letter-spacing:-0.01em;">ShadowCraft</a>
-    <a href="https://shadowcraft41.gumroad.com/l/chrlxf" style="font-size:13px;color:var(--fg-secondary);text-decoration:none;">Pro — $9</a>
+    <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="btn btn-secondary" style="text-decoration:none;padding:5px 12px;font-size:12px;">Pro — $9</a>
   </div>
 </nav>
 
-<!-- Hero -->
-<main style="max-width:720px;margin:0 auto;padding:0 24px;">
-  <section style="padding:72px 0 48px;text-align:center;">
-    <h1 style="font-size:clamp(28px,5vw,40px);font-weight:700;letter-spacing:-0.025em;line-height:1.1;margin-bottom:12px;">
-      Validate your MCP server
-    </h1>
-    <p style="font-size:17px;color:var(--fg-secondary);max-width:480px;margin:0 auto;line-height:1.47;">
-      Paste your configuration. Get instant feedback on protocol compliance, schema validity, and production readiness.
-    </p>
+<main style="max-width:780px;margin:0 auto;padding:0 24px;">
+  <section class="anim-fade-up" style="padding:56px 0 36px;text-align:center;">
+    <h1 style="font-size:clamp(26px,5vw,36px);font-weight:700;letter-spacing:-0.03em;line-height:1.1;margin-bottom:10px;">Test your MCP server</h1>
+    <p style="font-size:16px;color:var(--fg2);max-width:460px;margin:0 auto;line-height:1.5;">Validate config, connect to a live server, and test tool calls in real time.</p>
   </section>
 
-  <!-- Tool -->
-  <section style="margin-bottom:64px;">
-    <label for="config-input" style="display:block;font-size:13px;font-weight:500;color:var(--fg-secondary);margin-bottom:8px;">Configuration</label>
-    <textarea
-      id="config-input"
-      style="width:100%;height:260px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;font-family:var(--mono);font-size:13px;line-height:1.6;color:var(--fg);resize:vertical;display:block;"
-      placeholder='{"name": "my-server", "version": "1.0.0", "transport": {"type": "stdio"}, "tools": [...]}'
-      spellcheck="false"
-    ></textarea>
+  <!-- Tabs -->
+  <div style="width:40px;height:1px;background:var(--border);margin:0 auto 24px;animation:fade-in 0.6s ease 0.3s both;"></div>
+  <div class="anim-fade-up anim-d1" style="display:flex;gap:8px;margin-bottom:20px;justify-content:center;">
+    <button class="tab-btn active" onclick="switchMode('config')" id="tab-config">
+      <span style="margin-right:4px;">&#9998;</span> Validate Config
+    </button>
+    <button class="tab-btn" onclick="switchMode('live')" id="tab-live">
+      <span style="margin-right:4px;">&#9889;</span> Test Live Server
+    </button>
+  </div>
 
-    <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
-      <button onclick="loadSample()" style="font-size:14px;font-weight:500;color:var(--fg-secondary);background:none;border:none;cursor:pointer;padding:8px 12px;border-radius:var(--radius-sm);transition:color 150ms;font-family:var(--font);">Load sample</button>
-      <button onclick="validate()" style="font-size:14px;font-weight:600;color:#fff;background:var(--accent);border:none;border-radius:var(--radius-sm);padding:8px 20px;cursor:pointer;transition:background 150ms;font-family:var(--font);">Validate</button>
-      <button onclick="clearResults()" style="font-size:14px;color:var(--fg-tertiary);background:none;border:none;cursor:pointer;padding:8px;font-family:var(--font);">Clear</button>
+  <!-- Config Mode -->
+  <div id="mode-config" class="card anim-scale-in anim-d2" style="padding:24px;margin-bottom:48px;">
+    <label style="display:block;font-size:13px;font-weight:500;color:var(--fg2);margin-bottom:8px;">Server Configuration</label>
+    <textarea id="config-input" style="width:100%;height:200px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--fg);resize:vertical;transition:border-color 0.2s,box-shadow 0.2s;" placeholder='{"name":"my-server","version":"1.0.0","transport":{"type":"stdio"},"tools":[...]}' spellcheck="false"></textarea>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+      <button class="btn btn-secondary" onclick="loadSample()">Load sample</button>
+      <button class="btn btn-primary" onclick="validateConfig()">Validate</button>
+      <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    </div>
+    <div id="config-results" style="display:none;margin-top:20px;animation:fade-up 0.3s ease;"></div>
+  </div>
+
+  <!-- Live Mode -->
+  <div id="mode-live" style="display:none;margin-bottom:48px;" class="anim-scale-in anim-d2">
+    <div class="card" style="padding:20px;margin-bottom:12px;">
+      <label style="display:block;font-size:13px;font-weight:500;color:var(--fg2);margin-bottom:8px;">Server Endpoint</label>
+      <div style="display:flex;gap:8px;">
+        <input id="server-url" type="url" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 14px;font-size:14px;color:var(--fg);transition:border-color 0.2s,box-shadow 0.2s;" placeholder="https://your-server.com/sse" />
+        <button class="btn btn-primary" id="connect-btn" onclick="connectServer()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          Connect
+        </button>
+        <button class="btn btn-destructive" id="disconnect-btn" onclick="disconnectServer()" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          Disconnect
+        </button>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:12px;font-size:13px;color:var(--fg2);">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <input type="radio" name="transport" value="sse" checked style="accent-color:var(--accent);" /> SSE
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <input type="radio" name="transport" value="streamable-http" style="accent-color:var(--accent);" /> Streamable HTTP
+        </label>
+      </div>
     </div>
 
-    <div id="results" style="display:none;margin-top:24px;">
-      <div id="results-list"></div>
+    <!-- Log -->
+    <div class="card" style="margin-bottom:12px;">
+      <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:13px;font-weight:500;">Connection Log</span>
+        <span id="conn-status" class="badge badge-info">Disconnected</span>
+      </div>
+      <div id="conn-log" class="log" style="border:none;border-radius:0;max-height:260px;"><span class="info">Ready to connect.</span>
+</div>
     </div>
-  </section>
+
+    <!-- Server Info + Tools -->
+    <div id="server-info" style="display:none;">
+      <div class="card" style="padding:16px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:500;">Server</span>
+          <span id="server-name" class="badge badge-pass"></span>
+          <span id="server-version" class="badge badge-info"></span>
+          <span style="margin-left:auto;display:flex;gap:16px;font-size:13px;color:var(--fg2);">
+            <span>Tools: <strong id="tool-count" style="color:var(--fg);">0</strong></span>
+            <span>Prompts: <strong id="prompt-count" style="color:var(--fg);">0</strong></span>
+            <span>Resources: <strong id="resource-count" style="color:var(--fg);">0</strong></span>
+          </span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:12px;">
+        <div style="padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:500;">Available Tools</div>
+        <div id="tools-list"></div>
+      </div>
+
+      <div class="card" style="padding:16px;">
+        <div style="font-size:13px;font-weight:500;margin-bottom:12px;">Test Tool Call</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <select id="tool-select" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;font-size:13px;color:var(--fg);font-family:var(--font);transition:border-color 0.2s;"></select>
+          <button class="btn btn-primary" onclick="callTool()" id="call-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Call
+          </button>
+        </div>
+        <label style="display:block;font-size:12px;color:var(--fg2);margin-bottom:6px;">Arguments (JSON)</label>
+        <textarea id="tool-args" style="width:100%;height:80px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;font-family:var(--mono);font-size:12px;color:var(--fg);resize:vertical;transition:border-color 0.2s,box-shadow 0.2s;" placeholder='{"city": "San Francisco"}'></textarea>
+        <div id="tool-result" style="display:none;margin-top:12px;animation:fade-up 0.25s ease;"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Pro -->
-  <section style="padding:48px 0;border-top:1px solid var(--border);">
-    <div style="text-align:center;">
-      <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.01em;margin-bottom:8px;">Need deeper validation?</h2>
-      <p style="font-size:15px;color:var(--fg-secondary);margin-bottom:20px;max-width:420px;margin-left:auto;margin-right:auto;">
-        MCP Linter Pro runs runtime validation, tests actual tool calls, and catches bugs that config-only checks miss.
-      </p>
-      <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
-        <a href="https://shadowcraft41.gumroad.com/l/chrlxf" style="display:inline-block;font-size:15px;font-weight:600;color:#fff;background:var(--accent);border-radius:var(--radius-sm);padding:10px 24px;text-decoration:none;transition:background 150ms;">
-          Get MCP Linter Pro — $9
-        </a>
-        <span style="font-size:13px;color:var(--fg-tertiary);">Code <span style="font-family:var(--mono);color:var(--fg);">GITHUB50</span> for 50% off</span>
-      </div>
+  <section id="pro-section" class="anim-fade-up anim-d3" style="padding:40px 0 64px;border-top:1px solid var(--border);text-align:center;">
+    <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;margin-bottom:8px;">Need deeper validation?</h2>
+    <p style="font-size:15px;color:var(--fg2);margin-bottom:20px;">Custom rules, team features, and priority support.</p>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+      <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="btn btn-primary" style="text-decoration:none;padding:12px 28px;font-size:14px;border-radius:12px;">
+        Get MCP Linter Pro — $9
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      <span style="font-size:13px;color:var(--fg3);">Code <span class="mono" style="color:var(--fg);">GITHUB50</span> for 50% off</span>
     </div>
   </section>
 </main>
 
-<!-- Footer -->
 <footer style="border-top:1px solid var(--border);padding:32px 24px;text-align:center;">
-  <p style="font-size:12px;color:var(--fg-tertiary);">
-    ShadowCraft
-    <span style="margin:0 8px;">·</span>
-    <a href="https://shadowcraft41.gumroad.com" style="color:var(--fg-secondary);text-decoration:none;">Products</a>
-    <span style="margin:0 8px;">·</span>
-    <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="color:var(--fg-secondary);text-decoration:none;">Docs</a>
-  </p>
+  <p style="font-size:12px;color:var(--fg3);">ShadowCraft <span style="margin:0 8px;">·</span> <a href="https://shadowcraft41.gumroad.com" style="color:var(--fg2);text-decoration:none;">Products</a> <span style="margin:0 8px;">·</span> <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="color:var(--fg2);text-decoration:none;">Docs</a></p>
 </footer>
 
 <script>
+// ── Ripple on click ──
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.btn, .tab-btn');
+  if (!btn || btn.disabled) return;
+  var rect = btn.getBoundingClientRect();
+  // Ripple
+  var ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  var size = Math.max(rect.width, rect.height);
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+  ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+  btn.appendChild(ripple);
+  // Glass flash via CSS variable
+  btn.style.setProperty('--ripple-x', ((e.clientX - rect.left) / rect.width * 100) + '%');
+  btn.style.setProperty('--ripple-y', ((e.clientY - rect.top) / rect.height * 100) + '%');
+  btn.classList.add('ripple-active');
+  setTimeout(function() { btn.classList.remove('ripple-active'); }, 120);
+  setTimeout(function() { ripple.remove(); }, 600);
+});
+
+// ── State ──
+var connected=false, eventSource=null, sessionId=null, rpcId=0, serverCapabilities=null, availableTools=[], pendingCallbacks={};
+
+function switchMode(m) {
+  document.getElementById('mode-config').style.display=m==='config'?'block':'none';
+  document.getElementById('mode-live').style.display=m==='live'?'block':'none';
+  document.getElementById('tab-config').className='tab-btn'+(m==='config'?' active':'');
+  document.getElementById('tab-live').className='tab-btn'+(m==='live'?' active':'');
+}
+
 function loadSample() {
-  document.getElementById('config-input').value = JSON.stringify({
-    name: "weather-server",
-    version: "1.0.0",
-    transport: { type: "stdio" },
-    tools: [
-      { name: "get_weather", description: "Get weather for a city", inputSchema: { type: "object", properties: { city: { type: "string" } }, required: ["city"] } },
-      { name: "get_forecast", description: "Get 5-day forecast", inputSchema: { type: "object", properties: { city: { type: "string" }, days: { type: "integer" } }, required: ["city"] } }
-    ]
-  }, null, 2);
+  document.getElementById('config-input').value=JSON.stringify({name:"weather-server",version:"1.0.0",transport:{type:"stdio"},tools:[{name:"get_weather",description:"Get weather for a city",inputSchema:{type:"object",properties:{city:{type:"string"}},required:["city"]}},{name:"get_forecast",description:"5-day forecast",inputSchema:{type:"object",properties:{city:{type:"string"},days:{type:"integer"}},required:["city"]}}]},null,2);
 }
 
-function validate() {
-  var raw = document.getElementById('config-input').value.trim();
-  var container = document.getElementById('results');
-  var list = document.getElementById('results-list');
-  container.style.display = 'block';
-  list.innerHTML = '';
-  if (!raw) { list.innerHTML = row('fail', 'No configuration provided', 'Paste your MCP server JSON above.'); return; }
-  var config; try { config = JSON.parse(raw); } catch(e) { list.innerHTML = row('fail', 'Invalid JSON', e.message); return; }
-
-  var c = [];
-  var vt = ['stdio','sse','streamable-http'];
-
-  if (config.name && typeof config.name === 'string') c.push(row('pass','Server name',config.name));
-  else c.push(row('warn','Missing name','Add a "name" field.'));
-
-  if (config.version) c.push(row('pass','Version',config.version));
-  else c.push(row('warn','No version','Semantic versioning recommended.'));
-
-  if (config.transport && config.transport.type) {
-    if (vt.includes(config.transport.type)) c.push(row('pass','Transport',config.transport.type));
-    else c.push(row('fail','Invalid transport',config.transport.type+' — must be: '+vt.join(', ')));
-  } else c.push(row('warn','No transport','Default is stdio.'));
-
-  if (config.tools && Array.isArray(config.tools)) {
-    c.push(row('pass','Tools',config.tools.length+' defined'));
-    config.tools.forEach(function(t,i){
-      var l=t.name||'Tool '+(i+1);
-      if(!t.name) c.push(row('fail',l+': no name','Every tool needs a name.'));
-      if(!t.description) c.push(row('warn',l+': no description','Helps agents choose the right tool.'));
-      if(!t.inputSchema) c.push(row('fail',l+': no schema','Schema required for validation.'));
-      else {
-        if(t.inputSchema.type!=='object') c.push(row('warn',l+': type is "'+t.inputSchema.type+'"','Expected "object".'));
-        var p=t.inputSchema.properties;
-        if(!p||Object.keys(p).length===0) c.push(row('warn',l+': no parameters','Define input parameters.'));
-      }
-    });
-  } else c.push(row('fail','No tools','MCP servers must expose tools.'));
-
-  if(config.prompts&&Array.isArray(config.prompts)) c.push(row('pass','Prompts',config.prompts.length+' defined'));
-  if(config.resources&&Array.isArray(config.resources)) c.push(row('pass','Resources',config.resources.length+' defined'));
-
-  list.innerHTML=c.join('');
-  var pc=(list.innerHTML.match(/data-t="pass"/g)||[]).length;
-  var wc=(list.innerHTML.match(/data-t="warn"/g)||[]).length;
-  var fc=(list.innerHTML.match(/data-t="fail"/g)||[]).length;
-  var sc=fc>0?'var(--fail)':wc>0?'var(--warn)':'var(--pass)';
-  var st=fc>0?'Fix errors before deploying.':wc>0?'Warnings are non-blocking.':'Configuration looks good.';
-  list.innerHTML+='<div style="margin-top:16px;padding:12px 16px;border-radius:var(--radius-sm);background:var(--surface);display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span style="font-weight:500;color:'+sc+';">'+st+'</span><span style="color:var(--fg-tertiary);font-family:var(--mono);font-size:12px;">'+pc+' passed, '+wc+' warnings, '+fc+' errors</span></div>';
+function validateConfig() {
+  var raw=document.getElementById('config-input').value.trim(),el=document.getElementById('config-results');
+  el.style.display='block';
+  if(!raw){el.innerHTML=row('fail','No configuration','Paste JSON above.');return;}
+  var c;try{c=JSON.parse(raw);}catch(e){el.innerHTML=row('fail','Invalid JSON',e.message);return;}
+  var checks=[],vt=['stdio','sse','streamable-http'];
+  if(c.name)checks.push(row('pass','Server name',c.name));else checks.push(row('warn','Missing name','Add a "name" field.'));
+  if(c.version)checks.push(row('pass','Version',c.version));else checks.push(row('warn','No version','Recommended.'));
+  if(c.transport&&c.transport.type){if(vt.includes(c.transport.type))checks.push(row('pass','Transport',c.transport.type));else checks.push(row('fail','Invalid transport',c.transport.type));}else checks.push(row('warn','No transport','Default stdio.'));
+  if(c.tools&&Array.isArray(c.tools)){checks.push(row('pass','Tools',c.tools.length+' defined'));c.tools.forEach(function(t,i){var l=t.name||'Tool '+(i+1);if(!t.name)checks.push(row('fail',l+': no name','Required.'));if(!t.description)checks.push(row('warn',l+': no desc','Recommended.'));if(!t.inputSchema)checks.push(row('fail',l+': no schema','Required.'));else{if(t.inputSchema.type!=='object')checks.push(row('warn',l+': type "'+t.inputSchema.type+'"','Expected object.'));}});}else checks.push(row('fail','No tools','Required.'));
+  if(c.prompts&&Array.isArray(c.prompts))checks.push(row('pass','Prompts',c.prompts.length+' defined'));
+  if(c.resources&&Array.isArray(c.resources))checks.push(row('pass','Resources',c.resources.length+' defined'));
+  el.innerHTML=checks.join('');
 }
 
-function row(type,title,desc){
-  var colors={pass:'var(--pass)',warn:'var(--warn)',fail:'var(--fail)'};
-  var icons={pass:'&#10003;',warn:'&#9888;',fail:'&#10007;'};
-  return '<div data-t="'+type+'" style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:14px;"><span style="font-size:13px;color:'+colors[type]+';font-weight:600;min-width:18px;">'+icons[type]+'</span><div><div style="font-weight:500;color:var(--fg);">'+title+'</div><div style="font-size:13px;color:var(--fg-secondary);margin-top:2px;">'+desc+'</div></div></div>';
+function row(type,title,desc){var co={pass:'var(--pass)',warn:'var(--warn)',fail:'var(--fail)'},ic={pass:'&#10003;',warn:'&#9888;',fail:'&#10007;'};return '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;"><span style="color:'+co[type]+';font-weight:600;min-width:16px;">'+ic[type]+'</span><div><div style="font-weight:500;">'+title+'</div><div style="font-size:13px;color:var(--fg2);margin-top:1px;">'+desc+'</div></div></div>';}
+
+function clearAll(){document.getElementById('config-input').value='';document.getElementById('config-results').style.display='none';document.getElementById('config-results').innerHTML='';}
+
+// ── Live ──
+function log(msg,cls){var el=document.getElementById('conn-log'),ts=new Date().toLocaleTimeString();el.innerHTML+='<span class="ts">['+ts+']</span> <span class="'+(cls||'info')+'">'+msg+'</span>\n';el.scrollTop=el.scrollHeight;}
+function setStatus(t,c){var el=document.getElementById('conn-status');el.textContent=t;el.className='badge badge-'+c;}
+function getTransport(){return document.querySelector('input[name="transport"]:checked').value;}
+
+function sendRpc(method,params){return new Promise(function(resolve,reject){var id=++rpcId,msg={jsonrpc:"2.0",id:id,method:method,params:params||{}};pendingCallbacks[id]={resolve:resolve,reject:reject};if(getTransport()==='sse'){fetch(document.getElementById('server-url').value,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(msg)}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);}).catch(function(e){delete pendingCallbacks[id];reject(e);});}else{var url=document.getElementById('server-url').value,headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream'};if(sessionId)headers['Mcp-Session-Id']=sessionId;fetch(url,{method:'POST',headers:headers,body:JSON.stringify(msg)}).then(function(r){var sid=r.headers.get('Mcp-Session-Id');if(sid)sessionId=sid;var ct=r.headers.get('content-type')||'';if(ct.includes('text/event-stream'))return r.text().then(function(body){body.split('\n').forEach(function(line){if(line.startsWith('data: '))try{var d=JSON.parse(line.substring(6));if(d.id&&pendingCallbacks[d.id]){pendingCallbacks[d.id].resolve(d);delete pendingCallbacks[d.id];}}catch(e){}});});return r.json();}).then(function(data){if(data&&data.id&&pendingCallbacks[data.id]){pendingCallbacks[data.id].resolve(data);delete pendingCallbacks[data.id];}}).catch(function(e){reject(e);});}setTimeout(function(){if(pendingCallbacks[id]){pendingCallbacks[id].reject(new Error('Timeout'));delete pendingCallbacks[id];}},10000);});}
+
+async function connectServer(){
+  var url=document.getElementById('server-url').value.trim();
+  if(!url){log('Enter a server URL.','err');return;}
+  document.getElementById('connect-btn').innerHTML='<span class="spinner"></span> Connecting...';
+  document.getElementById('connect-btn').disabled=true;
+  document.getElementById('conn-log').innerHTML='';
+  setStatus('Connecting...','info');
+  try{
+    var transport=getTransport();
+    log('Connecting to '+url+' ('+transport+')','info');
+    if(transport==='sse'){eventSource=new EventSource(url);eventSource.onopen=function(){log('SSE opened','recv');};eventSource.onmessage=function(evt){try{var d=JSON.parse(evt.data);log('< '+JSON.stringify(d).substring(0,500),'recv');if(d.id&&pendingCallbacks[d.id]){pendingCallbacks[d.id].resolve(d);delete pendingCallbacks[d.id];}}catch(e){}};eventSource.onerror=function(){log('SSE error','err');};}
+    log('> initialize','send');
+    var initResult=await sendRpc('initialize',{protocolVersion:"2024-11-05",capabilities:{},clientInfo:{name:"ShadowCraft Validator",version:"1.0.0"}});
+    if(initResult.error)throw new Error('Init failed: '+(initResult.error.message||JSON.stringify(initResult.error)));
+    serverCapabilities=initResult.result&&initResult.result.capabilities;
+    var si=initResult.result&&initResult.result.serverInfo;
+    log('< OK — '+(si?si.name+' v'+si.version:'connected'),'recv');
+    await sendRpc('notifications/initialized',{});
+    log('> tools/list','send');
+    var toolsResult=await sendRpc('tools/list',{});
+    if(toolsResult.error)throw new Error('tools/list: '+toolsResult.error.message);
+    availableTools=toolsResult.result&&toolsResult.result.tools?toolsResult.result.tools:[];
+    log('< '+availableTools.length+' tool(s)','recv');
+    connected=true;setStatus('Connected','pass');
+    document.getElementById('connect-btn').style.display='none';
+    document.getElementById('disconnect-btn').style.display='';
+    document.getElementById('server-info').style.display='block';
+    if(si){document.getElementById('server-name').textContent=si.name||'?';document.getElementById('server-version').textContent='v'+(si.version||'?');}
+    document.getElementById('tool-count').textContent=availableTools.length;
+    try{var pr=await sendRpc('prompts/list',{});document.getElementById('prompt-count').textContent=(pr.result&&pr.result.prompts?pr.result.prompts.length:0);}catch(e){document.getElementById('prompt-count').textContent='—';}
+    try{var rr=await sendRpc('resources/list',{});document.getElementById('resource-count').textContent=(rr.result&&rr.result.resources?rr.result.resources.length:0);}catch(e){document.getElementById('resource-count').textContent='—';}
+    renderTools();
+  }catch(e){log('ERROR: '+e.message,'err');setStatus('Failed','fail');if(eventSource){eventSource.close();eventSource=null;}}
+  document.getElementById('connect-btn').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Connect';
+  document.getElementById('connect-btn').disabled=false;
 }
 
-function clearResults(){document.getElementById('results').style.display='none';document.getElementById('results-list').innerHTML='';}
+function renderTools(){
+  var list=document.getElementById('tools-list'),sel=document.getElementById('tool-select');
+  list.innerHTML='';sel.innerHTML='';
+  if(!availableTools.length){list.innerHTML='<div style="padding:24px;text-align:center;color:var(--fg2);font-size:14px;">No tools exposed.</div>';return;}
+  availableTools.forEach(function(tool){
+    var schema=tool.inputSchema?JSON.stringify(tool.inputSchema,null,2):'No schema';
+    list.innerHTML+='<div class="tool-card"><div class="tool-name">'+esc(tool.name)+'</div><div class="tool-desc">'+esc(tool.description||'No description')+'</div><div class="tool-schema">'+esc(schema)+'</div></div>';
+    var opt=document.createElement('option');opt.value=tool.name;opt.textContent=tool.name;sel.appendChild(opt);
+  });
+  if(availableTools.length>0)fillArgs(availableTools[0]);
+  sel.onchange=function(){var t=availableTools.find(function(x){return x.name===sel.value;});if(t)fillArgs(t);};
+}
+
+function fillArgs(tool){
+  var el=document.getElementById('tool-args');
+  if(tool.inputSchema&&tool.inputSchema.properties){var s={};Object.keys(tool.inputSchema.properties).forEach(function(k){var p=tool.inputSchema.properties[k];s[k]=p.type==='string'?'':p.type==='integer'||p.type==='number'?0:p.type==='boolean'?false:null;});el.value=JSON.stringify(s,null,2);}else el.value='{}';
+}
+
+async function callTool(){
+  var name=document.getElementById('tool-select').value,argsRaw=document.getElementById('tool-args').value.trim(),args;
+  try{args=JSON.parse(argsRaw);}catch(e){alert('Invalid JSON: '+e.message);return;}
+  var resultEl=document.getElementById('tool-result');resultEl.style.display='block';
+  resultEl.innerHTML='<div style="padding:12px;color:var(--fg2);font-size:13px;"><span class="spinner"></span> Calling '+name+'...</div>';
+  document.getElementById('call-btn').disabled=true;
+  try{
+    log('> tools/call '+name,'send');
+    var result=await sendRpc('tools/call',{name:name,arguments:args});
+    if(result.error){log('< ERROR','err');resultEl.innerHTML='<div style="padding:12px;"><span class="badge badge-fail">Error</span><pre style="margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--fail);white-space:pre-wrap;">'+esc(JSON.stringify(result.error,null,2))+'</pre></div>';}
+    else{var content=result.result&&result.result.content?result.result.content:[];log('< OK — '+content.length+' block(s)','recv');var html='<div style="padding:12px;"><span class="badge badge-pass">Success</span>';content.forEach(function(b){if(b.type==='text')html+='<pre style="margin-top:8px;font-family:var(--mono);font-size:12px;white-space:pre-wrap;max-height:300px;overflow:auto;">'+esc(b.text)+'</pre>';else if(b.type==='image')html+='<img src="data:'+b.mimeType+';base64,'+b.data+'" style="margin-top:8px;max-width:100%;border-radius:8px;" />';});html+='</div>';resultEl.innerHTML=html;}
+  }catch(e){log('ERROR: '+e.message,'err');resultEl.innerHTML='<div style="padding:12px;"><span class="badge badge-fail">Failed</span><div style="margin-top:8px;font-size:13px;color:var(--fail);">'+esc(e.message)+'</div></div>';}
+  document.getElementById('call-btn').disabled=false;
+}
+
+function disconnectServer(){
+  if(eventSource){eventSource.close();eventSource=null;}
+  connected=false;sessionId=null;serverCapabilities=null;availableTools=[];pendingCallbacks={};rpcId=0;
+  setStatus('Disconnected','info');
+  document.getElementById('connect-btn').style.display='';
+  document.getElementById('disconnect-btn').style.display='none';
+  document.getElementById('server-info').style.display='none';
+  document.getElementById('conn-log').innerHTML='<span class="info">Disconnected.</span>';
+}
+
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 </script>
 </body>
 </html>
