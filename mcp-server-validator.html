@@ -411,6 +411,9 @@
           Disconnect
         </button>
       </div>
+      <div style="margin-top:8px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);font-size:12px;color:var(--fg3);">
+        <strong>Note:</strong> Live testing requires the server to accept cross-origin (CORS) requests. Local MCP servers typically do not support browser connections. Use cloud-hosted MCP servers or a CORS proxy.
+      </div>
       <div style="display:flex;gap:16px;margin-top:12px;font-size:13px;color:var(--fg2);">
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
           <input type="radio" name="transport" value="sse" checked style="accent-color:var(--accent);" /> SSE
@@ -557,7 +560,102 @@ function log(msg,cls){var el=document.getElementById('conn-log'),ts=new Date().t
 function setStatus(t,c){var el=document.getElementById('conn-status');el.textContent=t;el.className='badge badge-'+c;}
 function getTransport(){return document.querySelector('input[name="transport"]:checked').value;}
 
-function sendRpc(method,params){return new Promise(function(resolve,reject){var id=++rpcId,msg={jsonrpc:"2.0",id:id,method:method,params:params||{}};pendingCallbacks[id]={resolve:resolve,reject:reject};if(getTransport()==='sse'){fetch(document.getElementById('server-url').value,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(msg)}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);}).catch(function(e){delete pendingCallbacks[id];reject(e);});}else{var url=document.getElementById('server-url').value,headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream'};if(sessionId)headers['Mcp-Session-Id']=sessionId;fetch(url,{method:'POST',headers:headers,body:JSON.stringify(msg)}).then(function(r){var sid=r.headers.get('Mcp-Session-Id');if(sid)sessionId=sid;var ct=r.headers.get('content-type')||'';if(ct.includes('text/event-stream'))return r.text().then(function(body){body.split('\n').forEach(function(line){if(line.startsWith('data: '))try{var d=JSON.parse(line.substring(6));if(d.id&&pendingCallbacks[d.id]){pendingCallbacks[d.id].resolve(d);delete pendingCallbacks[d.id];}}catch(e){}});});return r.json();}).then(function(data){if(data&&data.id&&pendingCallbacks[data.id]){pendingCallbacks[data.id].resolve(data);delete pendingCallbacks[data.id];}}).catch(function(e){reject(e);});}setTimeout(function(){if(pendingCallbacks[id]){pendingCallbacks[id].reject(new Error('Timeout'));delete pendingCallbacks[id];}},10000);});}
+function sendRpc(method,params){
+  return new Promise(function(resolve,reject){
+    var id=++rpcId;
+    var msg={jsonrpc:"2.0",id:id,method:method,params:params||{}};
+    pendingCallbacks[id]={resolve:resolve,reject:reject,method:method};
+    var url=document.getElementById('server-url').value.trim();
+    var transport=getTransport();
+    
+    // Build headers based on transport
+    var headers={'Content-Type':'application/json','Accept':'application/json, text/event-stream'};
+    if(sessionId)headers['Mcp-Session-Id']=sessionId;
+    
+    // For SSE transport, also set up response handling via EventSource
+    if(transport==='sse'&&eventSource){
+      // SSE responses come via the event stream, POST is fire-and-forget
+    }
+    
+    fetch(url,{method:'POST',headers:headers,body:JSON.stringify(msg),mode:'cors'}).then(function(r){
+      var sid=r.headers.get('Mcp-Session-Id');
+      if(sid)sessionId=sid;
+      var ct=r.headers.get('content-type')||'';
+      
+      // Handle SSE response format
+      if(ct.includes('text/event-stream')){
+        return r.text().then(function(body){
+          var lines=body.split('\n');
+          lines.forEach(function(line){
+            line=line.trim();
+            if(line.startsWith('data: ')){
+              try{
+                var d=JSON.parse(line.substring(6));
+                if(d.id&&pendingCallbacks[d.id]){
+                  pendingCallbacks[d.id].resolve(d);
+                  delete pendingCallbacks[d.id];
+                }
+              }catch(e){}
+            }
+          });
+          // If no response was found in SSE, resolve with empty
+          if(pendingCallbacks[id]){
+            pendingCallbacks[id].resolve({jsonrpc:"2.0",id:id,result:{}});
+            delete pendingCallbacks[id];
+          }
+        });
+      }
+      
+      // Handle JSON response
+      if(ct.includes('application/json')){
+        return r.json().then(function(data){
+          if(data&&data.id&&pendingCallbacks[data.id]){
+            pendingCallbacks[data.id].resolve(data);
+            delete pendingCallbacks[data.id];
+          }
+        });
+      }
+      
+      // Handle empty response (202 Accepted)
+      if(r.status===202||r.status===204){
+        if(pendingCallbacks[id]){
+          pendingCallbacks[id].resolve({jsonrpc:"2.0",id:id,result:{}});
+          delete pendingCallbacks[id];
+        }
+        return;
+      }
+      
+      // Try to parse as text
+      return r.text().then(function(text){
+        if(text&&text.trim()){
+          try{
+            var data=JSON.parse(text);
+            if(data&&data.id&&pendingCallbacks[data.id]){
+              pendingCallbacks[data.id].resolve(data);
+              delete pendingCallbacks[data.id];
+            }
+          }catch(e){}
+        }
+      });
+    }).catch(function(e){
+      // Check for CORS errors specifically
+      if(e.message&&e.message.includes('Failed to fetch')){
+        log('CORS error: The server does not allow cross-origin requests. This is common for MCP servers designed for local use.','err');
+        log('Try running a local proxy or using a server with CORS headers enabled.','info');
+      }
+      delete pendingCallbacks[id];
+      reject(e);
+    });
+    
+    // Timeout
+    setTimeout(function(){
+      if(pendingCallbacks[id]){
+        pendingCallbacks[id].reject(new Error('Timeout after 10s - server did not respond'));
+        delete pendingCallbacks[id];
+      }
+    },10000);
+  });
+}
 
 async function connectServer(){
   var url=document.getElementById('server-url').value.trim();
@@ -591,7 +689,16 @@ async function connectServer(){
     try{var pr=await sendRpc('prompts/list',{});document.getElementById('prompt-count').textContent=(pr.result&&pr.result.prompts?pr.result.prompts.length:0);}catch(e){document.getElementById('prompt-count').textContent='—';}
     try{var rr=await sendRpc('resources/list',{});document.getElementById('resource-count').textContent=(rr.result&&rr.result.resources?rr.result.resources.length:0);}catch(e){document.getElementById('resource-count').textContent='—';}
     renderTools();
-  }catch(e){log('ERROR: '+e.message,'err');setStatus('Failed','fail');if(eventSource){eventSource.close();eventSource=null;}}
+  }catch(e){
+    var errMsg=e.message||'Unknown error';
+    if(errMsg.includes('Failed to fetch')||errMsg.includes('NetworkError')){
+      errMsg='Connection failed — this may be a CORS issue. The MCP server must allow cross-origin requests from browsers. Most local MCP servers do not support browser connections directly.';
+      log('HINT: Try running an MCP proxy server that adds CORS headers, or use a cloud-hosted MCP server.','info');
+    }
+    log('ERROR: '+errMsg,'err');
+    setStatus('Failed','fail');
+    if(eventSource){eventSource.close();eventSource=null;}
+  }
   document.getElementById('connect-btn').innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Connect';
   document.getElementById('connect-btn').disabled=false;
 }
