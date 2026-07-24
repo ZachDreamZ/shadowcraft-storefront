@@ -1,326 +1,198 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MCP Server Validator — Free Tool | ShadowCraft</title>
 <meta name="description" content="Free online tool to validate your MCP server configuration. Check protocol compliance, schema validity, and transport settings instantly.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  darkMode: 'class',
-  theme: {
-    extend: {
-      colors: {
-        background: '#0F172A',
-        foreground: '#F8FAFC',
-        card: '#1E293B',
-        'card-foreground': '#F8FAFC',
-        border: '#334155',
-        muted: '#475569',
-        'muted-foreground': '#94A3B8',
-        accent: '#22C55E',
-        'accent-foreground': '#0F172A',
-        destructive: '#EF4444',
-        ring: '#22C55E',
-      },
-      fontFamily: {
-        sans: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-      },
-      borderRadius: {
-        lg: '0.75rem',
-        md: '0.5rem',
-        sm: '0.375rem',
-      },
-    }
-  }
-}
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=SF+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    background: #0F172A;
-    color: #F8FAFC;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
+  :root {
+    --bg: #FFFFFF;
+    --fg: #1D1D1F;
+    --fg-secondary: #86868B;
+    --fg-tertiary: #AEAEB2;
+    --border: #E5E5EA;
+    --border-focus: #0071E3;
+    --accent: #0071E3;
+    --accent-hover: #0077ED;
+    --surface: #F5F5F7;
+    --pass: #34C759;
+    --warn: #FF9500;
+    --fail: #FF3B30;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    --mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
   }
-  textarea:focus, button:focus-visible {
-    outline: 2px solid #22C55E;
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.47059;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  textarea:focus, button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--border-focus);
     outline-offset: 2px;
   }
-  .glow { text-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-in { animation: fadeUp 0.3s ease-out forwards; }
-  @media (prefers-reduced-motion: reduce) {
-    .animate-in { animation: none; }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000;
+      --fg: #F5F5F7;
+      --fg-secondary: #86868B;
+      --fg-tertiary: #6E6E73;
+      --border: #38383A;
+      --surface: #1C1C1E;
+      --accent: #2997FF;
+      --accent-hover: #409CFF;
+    }
   }
 </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-<!-- Navigation -->
-<nav class="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-    <a href="https://zachdreamz.github.io/shadowcraft-storefront/" class="flex items-center gap-2 text-foreground font-semibold text-sm hover:text-accent transition-colors">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      ShadowCraft
-    </a>
-    <div class="flex items-center gap-3">
-      <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-md border border-border/50 hover:border-accent/50">Pro Version — $9</a>
-    </div>
+<!-- Nav -->
+<nav style="position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);">
+  <div style="max-width:720px;margin:0 auto;padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="font-size:15px;font-weight:600;color:var(--fg);text-decoration:none;letter-spacing:-0.01em;">ShadowCraft</a>
+    <a href="https://shadowcraft41.gumroad.com/l/chrlxf" style="font-size:13px;color:var(--fg-secondary);text-decoration:none;">Pro — $9</a>
   </div>
 </nav>
 
 <!-- Hero -->
-<section class="max-w-3xl mx-auto px-4 sm:px-6 pt-16 pb-10 text-center">
-  <div class="inline-flex items-center gap-1.5 bg-accent/10 border border-accent/20 text-accent rounded-full px-3 py-1 text-xs font-medium mb-6">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-    Free &amp; open source
-  </div>
-  <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-4">
-    Validate your <span class="text-accent glow">MCP server</span> config
-  </h1>
-  <p class="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto">
-    Paste your configuration and get instant feedback on protocol compliance, schema validity, and production readiness.
-  </p>
-</section>
+<main style="max-width:720px;margin:0 auto;padding:0 24px;">
+  <section style="padding:72px 0 48px;text-align:center;">
+    <h1 style="font-size:clamp(28px,5vw,40px);font-weight:700;letter-spacing:-0.025em;line-height:1.1;margin-bottom:12px;">
+      Validate your MCP server
+    </h1>
+    <p style="font-size:17px;color:var(--fg-secondary);max-width:480px;margin:0 auto;line-height:1.47;">
+      Paste your configuration. Get instant feedback on protocol compliance, schema validity, and production readiness.
+    </p>
+  </section>
 
-<!-- Validator Tool -->
-<section class="max-w-3xl mx-auto px-4 sm:px-6 pb-12">
-  <div class="bg-card border border-border rounded-lg">
-    <!-- Textarea -->
-    <div class="p-4 sm:p-6 border-b border-border">
-      <label for="config-input" class="block text-sm font-medium text-foreground mb-2">Server Configuration</label>
-      <textarea
-        id="config-input"
-        class="w-full h-64 bg-background border border-border rounded-md px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-card resize-y"
-        placeholder='Paste your MCP server config JSON here...
+  <!-- Tool -->
+  <section style="margin-bottom:64px;">
+    <label for="config-input" style="display:block;font-size:13px;font-weight:500;color:var(--fg-secondary);margin-bottom:8px;">Configuration</label>
+    <textarea
+      id="config-input"
+      style="width:100%;height:260px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;font-family:var(--mono);font-size:13px;line-height:1.6;color:var(--fg);resize:vertical;display:block;"
+      placeholder='{"name": "my-server", "version": "1.0.0", "transport": {"type": "stdio"}, "tools": [...]}'
+      spellcheck="false"
+    ></textarea>
 
-{
-  "name": "my-server",
-  "version": "1.0.0",
-  "transport": { "type": "stdio" },
-  "tools": [
-    {
-      "name": "get_weather",
-      "description": "Get weather for a city",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "city": { "type": "string" }
-        },
-        "required": ["city"]
-      }
-    }
-  ]
-}'
-        spellcheck="false"
-      ></textarea>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+      <button onclick="loadSample()" style="font-size:14px;font-weight:500;color:var(--fg-secondary);background:none;border:none;cursor:pointer;padding:8px 12px;border-radius:var(--radius-sm);transition:color 150ms;font-family:var(--font);">Load sample</button>
+      <button onclick="validate()" style="font-size:14px;font-weight:600;color:#fff;background:var(--accent);border:none;border-radius:var(--radius-sm);padding:8px 20px;cursor:pointer;transition:background 150ms;font-family:var(--font);">Validate</button>
+      <button onclick="clearResults()" style="font-size:14px;color:var(--fg-tertiary);background:none;border:none;cursor:pointer;padding:8px;font-family:var(--font);">Clear</button>
     </div>
 
-    <!-- Actions -->
-    <div class="px-4 sm:px-6 py-4 flex flex-wrap items-center gap-3">
-      <button onclick="loadSample()" class="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-md px-3 py-2 hover:border-accent/50 transition-all cursor-pointer">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Load sample
-      </button>
-      <button onclick="validate()" class="inline-flex items-center gap-1.5 text-sm font-medium bg-accent text-accent-foreground rounded-md px-5 py-2 hover:bg-accent/90 transition-all cursor-pointer shadow-sm shadow-accent/20">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Validate
-      </button>
-      <button onclick="clearResults()" class="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">Clear</button>
+    <div id="results" style="display:none;margin-top:24px;">
+      <div id="results-list"></div>
     </div>
+  </section>
 
-    <!-- Results -->
-    <div id="results" class="hidden px-4 sm:px-6 pb-6">
-      <div class="border-t border-border pt-4">
-        <div id="results-list" class="space-y-2"></div>
+  <!-- Pro -->
+  <section style="padding:48px 0;border-top:1px solid var(--border);">
+    <div style="text-align:center;">
+      <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.01em;margin-bottom:8px;">Need deeper validation?</h2>
+      <p style="font-size:15px;color:var(--fg-secondary);margin-bottom:20px;max-width:420px;margin-left:auto;margin-right:auto;">
+        MCP Linter Pro runs runtime validation, tests actual tool calls, and catches bugs that config-only checks miss.
+      </p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <a href="https://shadowcraft41.gumroad.com/l/chrlxf" style="display:inline-block;font-size:15px;font-weight:600;color:#fff;background:var(--accent);border-radius:var(--radius-sm);padding:10px 24px;text-decoration:none;transition:background 150ms;">
+          Get MCP Linter Pro — $9
+        </a>
+        <span style="font-size:13px;color:var(--fg-tertiary);">Code <span style="font-family:var(--mono);color:var(--fg);">GITHUB50</span> for 50% off</span>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- Pro CTA -->
-<section class="max-w-3xl mx-auto px-4 sm:px-6 pb-16">
-  <div class="bg-card border border-accent/20 rounded-lg p-6 sm:p-8 text-center">
-    <h2 class="text-lg font-semibold mb-2">Need deeper validation?</h2>
-    <p class="text-muted-foreground text-sm mb-5 max-w-md mx-auto">
-      MCP Linter Pro runs runtime validation, tests actual tool calls in a sandbox, and catches bugs that config-only checks miss.
-    </p>
-    <div class="flex flex-wrap items-center justify-center gap-3">
-      <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="inline-flex items-center gap-1.5 text-sm font-medium bg-accent text-accent-foreground rounded-md px-5 py-2.5 hover:bg-accent/90 transition-all shadow-sm shadow-accent/20">
-        Get MCP Linter Pro — $9
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-      <span class="text-xs text-muted-foreground">Use code <span class="font-mono text-foreground">GITHUB50</span> for 50% off</span>
-    </div>
-  </div>
-</section>
+  </section>
+</main>
 
 <!-- Footer -->
-<footer class="border-t border-border/50 py-8 text-center">
-  <p class="text-xs text-muted-foreground">
-    ShadowCraft — AI Developer Tools
-    <span class="mx-2">·</span>
-    <a href="https://shadowcraft41.gumroad.com" class="hover:text-foreground transition-colors">All Products</a>
-    <span class="mx-2">·</span>
-    <a href="https://zachdreamz.github.io/shadowcraft-storefront/" class="hover:text-foreground transition-colors">Documentation</a>
+<footer style="border-top:1px solid var(--border);padding:32px 24px;text-align:center;">
+  <p style="font-size:12px;color:var(--fg-tertiary);">
+    ShadowCraft
+    <span style="margin:0 8px;">·</span>
+    <a href="https://shadowcraft41.gumroad.com" style="color:var(--fg-secondary);text-decoration:none;">Products</a>
+    <span style="margin:0 8px;">·</span>
+    <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="color:var(--fg-secondary);text-decoration:none;">Docs</a>
   </p>
 </footer>
 
 <script>
 function loadSample() {
   document.getElementById('config-input').value = JSON.stringify({
-    "name": "weather-server",
-    "version": "1.0.0",
-    "transport": { "type": "stdio" },
-    "tools": [
-      {
-        "name": "get_weather",
-        "description": "Get current weather for a city",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "city": { "type": "string", "description": "City name" }
-          },
-          "required": ["city"]
-        }
-      },
-      {
-        "name": "get_forecast",
-        "description": "Get 5-day forecast",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "city": { "type": "string" },
-            "days": { "type": "integer", "minimum": 1, "maximum": 5 }
-          },
-          "required": ["city"]
-        }
-      }
+    name: "weather-server",
+    version: "1.0.0",
+    transport: { type: "stdio" },
+    tools: [
+      { name: "get_weather", description: "Get weather for a city", inputSchema: { type: "object", properties: { city: { type: "string" } }, required: ["city"] } },
+      { name: "get_forecast", description: "Get 5-day forecast", inputSchema: { type: "object", properties: { city: { type: "string" }, days: { type: "integer" } }, required: ["city"] } }
     ]
   }, null, 2);
 }
 
 function validate() {
-  const raw = document.getElementById('config-input').value.trim();
-  const container = document.getElementById('results');
-  const list = document.getElementById('results-list');
-  container.classList.remove('hidden');
+  var raw = document.getElementById('config-input').value.trim();
+  var container = document.getElementById('results');
+  var list = document.getElementById('results-list');
+  container.style.display = 'block';
   list.innerHTML = '';
+  if (!raw) { list.innerHTML = row('fail', 'No configuration provided', 'Paste your MCP server JSON above.'); return; }
+  var config; try { config = JSON.parse(raw); } catch(e) { list.innerHTML = row('fail', 'Invalid JSON', e.message); return; }
 
-  if (!raw) {
-    list.innerHTML = resultItem('fail', 'No configuration provided', 'Paste your MCP server JSON config above.');
-    return;
-  }
+  var c = [];
+  var vt = ['stdio','sse','streamable-http'];
 
-  let config;
-  try { config = JSON.parse(raw); }
-  catch (e) {
-    list.innerHTML = resultItem('fail', 'Invalid JSON', e.message);
-    return;
-  }
+  if (config.name && typeof config.name === 'string') c.push(row('pass','Server name',config.name));
+  else c.push(row('warn','Missing name','Add a "name" field.'));
 
-  const checks = [];
+  if (config.version) c.push(row('pass','Version',config.version));
+  else c.push(row('warn','No version','Semantic versioning recommended.'));
 
-  // Name
-  if (config.name && typeof config.name === 'string') {
-    checks.push(resultItem('pass', 'Server name', 'Name: ' + config.name));
-  } else {
-    checks.push(resultItem('warn', 'Missing server name', 'Add a "name" field for identification.'));
-  }
-
-  // Version
-  if (config.version) {
-    checks.push(resultItem('pass', 'Version defined', 'Version: ' + config.version));
-  } else {
-    checks.push(resultItem('warn', 'No version field', 'Semantic versioning helps track compatibility.'));
-  }
-
-  // Transport
-  const validTransports = ['stdio', 'sse', 'streamable-http'];
   if (config.transport && config.transport.type) {
-    if (validTransports.includes(config.transport.type)) {
-      checks.push(resultItem('pass', 'Valid transport', config.transport.type));
-    } else {
-      checks.push(resultItem('fail', 'Invalid transport', '"' + config.transport.type + '" — must be: ' + validTransports.join(', ')));
-    }
-  } else {
-    checks.push(resultItem('warn', 'No transport defined', 'Default is stdio. Explicit declaration is recommended.'));
-  }
+    if (vt.includes(config.transport.type)) c.push(row('pass','Transport',config.transport.type));
+    else c.push(row('fail','Invalid transport',config.transport.type+' — must be: '+vt.join(', ')));
+  } else c.push(row('warn','No transport','Default is stdio.'));
 
-  // Tools
   if (config.tools && Array.isArray(config.tools)) {
-    checks.push(resultItem('pass', 'Tools array present', config.tools.length + ' tool(s) defined'));
-
-    config.tools.forEach(function(tool, i) {
-      var label = tool.name || 'Tool ' + (i + 1);
-      if (!tool.name) checks.push(resultItem('fail', label + ': missing name', 'Every tool needs a unique name.'));
-      if (!tool.description) checks.push(resultItem('warn', label + ': no description', 'Descriptions help AI agents select the right tool.'));
-      if (!tool.inputSchema) {
-        checks.push(resultItem('fail', label + ': no inputSchema', 'Input schemas are required for parameter validation.'));
-      } else {
-        if (tool.inputSchema.type !== 'object') {
-          checks.push(resultItem('warn', label + ': schema type is "' + tool.inputSchema.type + '"', 'MCP tools should accept object parameters.'));
-        }
-        var props = tool.inputSchema.properties;
-        if (!props || Object.keys(props).length === 0) {
-          checks.push(resultItem('warn', label + ': no input properties', 'Define parameters for this tool.'));
-        }
+    c.push(row('pass','Tools',config.tools.length+' defined'));
+    config.tools.forEach(function(t,i){
+      var l=t.name||'Tool '+(i+1);
+      if(!t.name) c.push(row('fail',l+': no name','Every tool needs a name.'));
+      if(!t.description) c.push(row('warn',l+': no description','Helps agents choose the right tool.'));
+      if(!t.inputSchema) c.push(row('fail',l+': no schema','Schema required for validation.'));
+      else {
+        if(t.inputSchema.type!=='object') c.push(row('warn',l+': type is "'+t.inputSchema.type+'"','Expected "object".'));
+        var p=t.inputSchema.properties;
+        if(!p||Object.keys(p).length===0) c.push(row('warn',l+': no parameters','Define input parameters.'));
       }
     });
-  } else {
-    checks.push(resultItem('fail', 'No tools defined', 'MCP servers must expose at least one tool.'));
-  }
+  } else c.push(row('fail','No tools','MCP servers must expose tools.'));
 
-  // Prompts / Resources
-  if (config.prompts && Array.isArray(config.prompts)) {
-    checks.push(resultItem('pass', 'Prompts defined', config.prompts.length + ' prompt(s)'));
-  }
-  if (config.resources && Array.isArray(config.resources)) {
-    checks.push(resultItem('pass', 'Resources defined', config.resources.length + ' resource(s)'));
-  }
+  if(config.prompts&&Array.isArray(config.prompts)) c.push(row('pass','Prompts',config.prompts.length+' defined'));
+  if(config.resources&&Array.isArray(config.resources)) c.push(row('pass','Resources',config.resources.length+' defined'));
 
-  list.innerHTML = checks.join('');
-
-  // Summary
-  var passCount = (list.innerHTML.match(/class="result-pass"/g) || []).length;
-  var warnCount = (list.innerHTML.match(/class="result-warn"/g) || []).length;
-  var failCount = (list.innerHTML.match(/class="result-fail"/g) || []).length;
-
-  var summaryClass = failCount > 0 ? 'border-destructive/30 bg-destructive/5' :
-                     warnCount > 0 ? 'border-yellow-500/30 bg-yellow-500/5' :
-                     'border-accent/30 bg-accent/5';
-  var summaryText = failCount > 0 ? 'Fix errors before deploying to production.' :
-                    warnCount > 0 ? 'Warnings are non-blocking. Consider addressing them.' :
-                    'Configuration looks good!';
-
-  list.innerHTML += '<div class="mt-3 flex items-center gap-3 text-sm p-3 rounded-md border ' + summaryClass + '">' +
-    '<span class="font-medium text-foreground">' + summaryText + '</span>' +
-    '<span class="ml-auto text-muted-foreground font-mono text-xs">' + passCount + ' passed · ' + warnCount + ' warnings · ' + failCount + ' errors</span></div>';
+  list.innerHTML=c.join('');
+  var pc=(list.innerHTML.match(/data-t="pass"/g)||[]).length;
+  var wc=(list.innerHTML.match(/data-t="warn"/g)||[]).length;
+  var fc=(list.innerHTML.match(/data-t="fail"/g)||[]).length;
+  var sc=fc>0?'var(--fail)':wc>0?'var(--warn)':'var(--pass)';
+  var st=fc>0?'Fix errors before deploying.':wc>0?'Warnings are non-blocking.':'Configuration looks good.';
+  list.innerHTML+='<div style="margin-top:16px;padding:12px 16px;border-radius:var(--radius-sm);background:var(--surface);display:flex;align-items:center;justify-content:space-between;font-size:13px;"><span style="font-weight:500;color:'+sc+';">'+st+'</span><span style="color:var(--fg-tertiary);font-family:var(--mono);font-size:12px;">'+pc+' passed, '+wc+' warnings, '+fc+' errors</span></div>';
 }
 
-function resultItem(type, title, desc) {
-  var icons = { pass: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-                warn: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-                fail: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>' };
-  return '<div class="flex items-start gap-3 p-3 rounded-md border border-border/50 bg-background/50 result-' + type + '">' +
-    '<div class="mt-0.5 shrink-0">' + icons[type] + '</div>' +
-    '<div class="min-w-0"><div class="text-sm font-medium text-foreground">' + title + '</div>' +
-    '<div class="text-xs text-muted-foreground mt-0.5">' + desc + '</div></div></div>';
+function row(type,title,desc){
+  var colors={pass:'var(--pass)',warn:'var(--warn)',fail:'var(--fail)'};
+  var icons={pass:'&#10003;',warn:'&#9888;',fail:'&#10007;'};
+  return '<div data-t="'+type+'" style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:14px;"><span style="font-size:13px;color:'+colors[type]+';font-weight:600;min-width:18px;">'+icons[type]+'</span><div><div style="font-weight:500;color:var(--fg);">'+title+'</div><div style="font-size:13px;color:var(--fg-secondary);margin-top:2px;">'+desc+'</div></div></div>';
 }
 
-function clearResults() {
-  document.getElementById('results').classList.add('hidden');
-  document.getElementById('results-list').innerHTML = '';
-}
+function clearResults(){document.getElementById('results').style.display='none';document.getElementById('results-list').innerHTML='';}
 </script>
 </body>
 </html>
