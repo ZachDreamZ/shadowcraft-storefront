@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Server Services — Setup, Audit & Consulting | ShadowCraft</title>
+<meta name="description" content="Professional MCP server setup, security audits, and consulting. Get your AI agents connected to tools in hours, not weeks.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FAFAFA; --fg: #0A0A0A; --fg2: #71717A; --fg3: #A1A1AA;
+    --border: #E4E4E7; --surface: #FFFFFF; --surface2: #F4F4F5;
+    --accent: #18181B; --accent-fg: #FAFAFA;
+    --pass: #16A34A; --warn: #D97706; --fail: #DC2626;
+    --r: 12px; --rs: 8px;
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Helvetica Neue', sans-serif;
+    --mono: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #09090B; --fg: #FAFAFA; --fg2: #A1A1AA; --fg3: #52525B;
+      --border: #27272A; --surface: #18181B; --surface2: #27272A;
+      --accent: #FAFAFA; --accent-fg: #09090B;
+    }
+  }
+  body { font-family: var(--font); background: var(--bg); color: var(--fg); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+  
+  .btn {
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: var(--font); font-weight: 500; font-size: 14px;
+    padding: 12px 24px; border-radius: 10px; border: none;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn:active { transform: scale(0.955) !important; transition-duration: 0.08s; }
+  .btn-primary {
+    background: var(--accent); color: var(--accent-fg);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04) inset;
+  }
+  .btn-primary:hover { background: color-mix(in srgb, var(--accent) 90%, var(--fg)); box-shadow: 0 6px 20px rgba(0,0,0,0.18); transform: translateY(-1px); }
+  .btn-success { background: var(--pass); color: #fff; box-shadow: 0 1px 3px rgba(22,163,74,0.25); }
+  .btn-success:hover { background: color-mix(in srgb, var(--pass) 88%, white); box-shadow: 0 6px 20px rgba(22,163,74,0.35); transform: translateY(-1px); }
+  
+  .card { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); transition: box-shadow 0.3s, transform 0.3s; }
+  .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  
+  @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .anim { animation: fade-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
+  .anim-d1 { animation-delay: 0.05s; }
+  .anim-d2 { animation-delay: 0.1s; }
+  .anim-d3 { animation-delay: 0.15s; }
+  
+  .price { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; }
+  .price-period { font-size: 14px; color: var(--fg2); font-weight: 400; }
+  .feature-list { list-style: none; }
+  .feature-list li { padding: 8px 0; display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+  .feature-list li::before { content: "✓"; color: var(--pass); font-weight: 600; min-width: 16px; }
+</style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:50;background:color-mix(in srgb, var(--bg) 80%, transparent);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+  <div style="max-width:800px;margin:0 auto;padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="font-size:15px;font-weight:600;color:var(--fg);text-decoration:none;">ShadowCraft</a>
+    <a href="mailto:xxtheshadowcraft@gmail.com" class="btn btn-primary" style="text-decoration:none;padding:6px 16px;font-size:13px;">Contact</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <!-- Hero -->
+  <section class="anim" style="padding:64px 0 40px;text-align:center;">
+    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);color:var(--pass);padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;margin-bottom:16px;">
+      Available for hire
+    </div>
+    <h1 style="font-size:clamp(28px,5vw,40px);font-weight:700;letter-spacing:-0.03em;line-height:1.1;margin-bottom:12px;">MCP Server<br>Setup & Consulting</h1>
+    <p style="font-size:17px;color:var(--fg2);max-width:500px;margin:0 auto;">Get your AI agents connected to tools in hours, not weeks. Professional MCP server development, security audits, and production deployment.</p>
+  </section>
+
+  <!-- Services -->
+  <section class="anim anim-d1" style="padding:0 0 48px;">
+    <div style="display:grid;gap:20px;">
+      
+      <!-- Quick Setup -->
+      <div class="card" style="padding:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--fg3);margin-bottom:4px;">Quick Setup</div>
+            <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;">MCP Server Configuration</h2>
+          </div>
+          <div style="text-align:right;">
+            <div class="price">$99</div>
+            <div class="price-period">one-time</div>
+          </div>
+        </div>
+        <p style="color:var(--fg2);font-size:14px;margin:12px 0 16px;">We configure, test, and deploy your MCP server. Includes Claude Desktop integration, transport setup, and tool validation.</p>
+        <ul class="feature-list">
+          <li>Server configuration and testing</li>
+          <li>Claude Desktop / Cursor integration</li>
+          <li>Transport setup (stdio, SSE, HTTP)</li>
+          <li>Tool schema validation</li>
+          <li>24-hour delivery</li>
+        </ul>
+        <div style="margin-top:20px;">
+          <a href="mailto:xxtheshadowcraft@gmail.com?subject=MCP%20Quick%20Setup%20-%20$99" class="btn btn-primary" style="text-decoration:none;">Get Started →</a>
+        </div>
+      </div>
+
+      <!-- Security Audit -->
+      <div class="card" style="padding:28px;border-color:rgba(220,38,38,0.3);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--fail);margin-bottom:4px;">Security</div>
+            <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;">MCP Security Audit</h2>
+          </div>
+          <div style="text-align:right;">
+            <div class="price">$249</div>
+            <div class="price-period">one-time</div>
+          </div>
+        </div>
+        <p style="color:var(--fg2);font-size:14px;margin:12px 0 16px;">Comprehensive security review of your MCP server. We check for prompt injection vulnerabilities, data exposure risks, and protocol compliance.</p>
+        <ul class="feature-list">
+          <li>Prompt injection vulnerability scan</li>
+          <li>Data exposure risk assessment</li>
+          <li>Protocol compliance verification</li>
+          <li>Tool permission audit</li>
+          <li>Detailed report with fix recommendations</li>
+          <li>72-hour delivery</li>
+        </ul>
+        <div style="margin-top:20px;">
+          <a href="mailto:xxtheshadowcraft@gmail.com?subject=MCP%20Security%20Audit%20-%20$249" class="btn btn-primary" style="text-decoration:none;">Get Started →</a>
+        </div>
+      </div>
+
+      <!-- Custom Development -->
+      <div class="card" style="padding:28px;border-color:rgba(99,102,241,0.3);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent);margin-bottom:4px;">Development</div>
+            <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;">Custom MCP Server</h2>
+          </div>
+          <div style="text-align:right;">
+            <div class="price">$499</div>
+            <div class="price-period">starting at</div>
+          </div>
+        </div>
+        <p style="color:var(--fg2);font-size:14px;margin:12px 0 16px;">We build a custom MCP server from scratch. Connect any API, database, or service to your AI agents with production-grade reliability.</p>
+        <ul class="feature-list">
+          <li>Custom tool development</li>
+          <li>API integration (any REST/GraphQL)</li>
+          <li>Database connectors</li>
+          <li>Authentication & authorization</li>
+          <li>CI/CD pipeline setup</li>
+          <li>30-day support included</li>
+        </ul>
+        <div style="margin-top:20px;">
+          <a href="mailto:xxtheshadowcraft@gmail.com?subject=MCP%20Custom%20Development%20-%20$499+" class="btn btn-success" style="text-decoration:none;">Get Started →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Us -->
+  <section class="anim anim-d2" style="padding:0 0 48px;">
+    <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;margin-bottom:20px;text-align:center;">Why ShadowCraft?</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">⚡</div>
+        <div style="font-size:14px;font-weight:600;">Fast Delivery</div>
+        <div style="font-size:13px;color:var(--fg2);">24-72 hour turnaround</div>
+      </div>
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">🔒</div>
+        <div style="font-size:14px;font-weight:600;">Security First</div>
+        <div style="font-size:13px;color:var(--fg2);">Every server audited</div>
+      </div>
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">📦</div>
+        <div style="font-size:14px;font-weight:600;">Production Ready</div>
+        <div style="font-size:13px;color:var(--fg2);">Not just prototyped</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="anim anim-d3" style="padding:0 0 64px;text-align:center;">
+    <div class="card" style="padding:40px;">
+      <h2 style="font-size:22px;font-weight:600;letter-spacing:-0.02em;margin-bottom:8px;">Ready to get started?</h2>
+      <p style="color:var(--fg2);margin-bottom:20px;">Email us with your project details and we'll respond within 2 hours.</p>
+      <a href="mailto:xxtheshadowcraft@gmail.com?subject=MCP%20Consulting%20Inquiry" class="btn btn-primary" style="text-decoration:none;font-size:16px;padding:14px 32px;">
+        xxtheshadowcraft@gmail.com
+      </a>
+      <p style="font-size:13px;color:var(--fg3);margin-top:12px;">Or book a free 15-minute call to discuss your project.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer style="border-top:1px solid var(--border);padding:32px 24px;text-align:center;">
+  <p style="font-size:12px;color:var(--fg3);">ShadowCraft <span style="margin:0 8px;">·</span> <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="color:var(--fg2);text-decoration:none;">Store</a> <span style="margin:0 8px;">·</span> <a href="https://github.com/ZachDreamZ" style="color:var(--fg2);text-decoration:none;">GitHub</a></p>
+</footer>
+
+</body>
+</html>
