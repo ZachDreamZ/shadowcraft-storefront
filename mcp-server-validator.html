@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free MCP Server Validator - Check Your Server in Seconds | ShadowCraft</title>
+<meta name="description" content="Free online tool to validate your MCP server configuration. Check protocol compliance, schema validity, and transport settings instantly.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#09090b;--card:#18181b;--border:#27272a;--text:#fafafa;--muted:#a1a1aa;--accent:#6366f1;--green:#22c55e;--red:#ef4444;--yellow:#eab308}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:800px;margin:0 auto;padding:0 24px}
+.hero{text-align:center;padding:60px 24px 40px}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:12px}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:550px;margin:0 auto}
+.tool-area{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;margin:24px 0}
+.tool-area h2{font-size:1.2rem;margin-bottom:16px}
+textarea{width:100%;height:200px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;resize:vertical;margin-bottom:16px}
+textarea:focus{outline:none;border-color:var(--accent)}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;border:none;font-size:0.95rem;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#818cf8}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-secondary:hover{border-color:var(--accent)}
+.results{margin-top:24px;display:none}
+.result-item{display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:8px;margin-bottom:8px}
+.result-pass{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2)}
+.result-warn{background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.2)}
+.result-fail{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2)}
+.result-icon{font-size:1.2rem;min-width:24px}
+.result-text h4{font-size:0.95rem;margin-bottom:2px}
+.result-text p{color:var(--muted);font-size:0.85rem}
+.pro-cta{background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,197,94,.1));border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:24px;margin:32px 0;text-align:center}
+.pro-cta h3{margin-bottom:8px}
+.pro-cta p{color:var(--muted);margin-bottom:16px;font-size:0.95rem}
+.pro-cta a{color:var(--accent);text-decoration:none;font-weight:600}
+.footer{text-align:center;padding:40px 24px;border-top:1px solid var(--border);color:var(--muted);font-size:0.85rem;margin-top:40px}
+.sample-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:6px;font-size:0.8rem;cursor:pointer;margin-bottom:12px}
+.sample-btn:hover{border-color:var(--accent);color:var(--text)}
+</style>
+</head>
+<body>
+<div class="hero">
+<h1>Validate Your <span>MCP Server</span> in Seconds</h1>
+<p>Paste your MCP server configuration and get instant feedback on protocol compliance, schema validity, and production readiness.</p>
+</div>
+
+<div class="container">
+<div class="tool-area">
+<h2>Server Configuration</h2>
+<button class="sample-btn" onclick="loadSample()">Load Sample Config</button>
+<textarea id="config" placeholder='Paste your MCP server config here...
+
+Example:
+{
+  "name": "my-mcp-server",
+  "version": "1.0.0",
+  "transport": {
+    "type": "stdio"
+  },
+  "tools": [
+    {
+      "name": "get_weather",
+      "description": "Get weather for a city",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {"type": "string"}
+        },
+        "required": ["city"]
+      }
+    }
+  ]
+}'></textarea>
+<div class="btn-row">
+<button class="btn btn-primary" onclick="validate()">Validate Configuration</button>
+<button class="btn btn-secondary" onclick="clearResults()">Clear</button>
+</div>
+
+<div class="results" id="results"></div>
+</div>
+
+<div class="pro-cta">
+<h3>Need deeper validation?</h3>
+<p>MCP Server Linter Pro runs runtime validation, tests actual tool calls, and catches bugs that config-only checks miss.</p>
+<a href="https://shadowcraft41.gumroad.com/l/chrlxf">Get MCP Linter Pro ($9) →</a>
+</div>
+</div>
+
+<div class="footer">
+<p>ShadowCraft - AI Developer Tools</p>
+<p style="margin-top:8px"><a href="https://shadowcraft41.gumroad.com" style="color:var(--accent);text-decoration:none">All Products</a> · <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="color:var(--accent);text-decoration:none">Documentation</a></p>
+</div>
+
+<script>
+function loadSample() {
+  document.getElementById('config').value = JSON.stringify({
+    "name": "weather-server",
+    "version": "1.0.0",
+    "transport": {"type": "stdio"},
+    "tools": [
+      {
+        "name": "get_weather",
+        "description": "Get weather",
+        "inputSchema": {
+          "type": "object",
+          "properties": {"city": {"type": "string"}},
+          "required": ["city"]
+        }
+      }
+    ]
+  }, null, 2);
+}
+
+function validate() {
+  const raw = document.getElementById('config').value.trim();
+  const results = document.getElementById('results');
+  results.style.display = 'block';
+  results.innerHTML = '';
+
+  if (!raw) {
+    results.innerHTML = '<div class="result-item result-fail"><div class="result-icon">✗</div><div class="result-text"><h4>No configuration provided</h4><p>Paste your MCP server config above.</p></div></div>';
+    return;
+  }
+
+  let config;
+  try {
+    config = JSON.parse(raw);
+  } catch (e) {
+    results.innerHTML = '<div class="result-item result-fail"><div class="result-icon">✗</div><div class="result-text"><h4>Invalid JSON</h4><p>' + e.message + '</p></div></div>';
+    return;
+  }
+
+  const checks = [];
+
+  // Check name
+  if (config.name && typeof config.name === 'string') {
+    checks.push({type:'pass', title:'Server name present', desc:'Name: ' + config.name});
+  } else {
+    checks.push({type:'warn', title:'Missing server name', desc:'Add a "name" field for identification.'});
+  }
+
+  // Check version
+  if (config.version) {
+    checks.push({type:'pass', title:'Version defined', desc:'Version: ' + config.version});
+  } else {
+    checks.push({type:'warn', title:'No version field', desc:'Semantic versioning helps track compatibility.'});
+  }
+
+  // Check transport
+  if (config.transport && config.transport.type) {
+    const valid = ['stdio', 'sse', 'streamable-http'];
+    if (valid.includes(config.transport.type)) {
+      checks.push({type:'pass', title:'Valid transport type', desc:'Transport: ' + config.transport.type});
+    } else {
+      checks.push({type:'fail', title:'Invalid transport type', desc:'Must be one of: ' + valid.join(', ')});
+    }
+  } else {
+    checks.push({type:'warn', title:'No transport defined', desc:'Default transport is stdio. Explicit is better.'});
+  }
+
+  // Check tools
+  if (config.tools && Array.isArray(config.tools)) {
+    checks.push({type:'pass', title:'Tools array present', desc:config.tools.length + ' tool(s) defined'});
+
+    config.tools.forEach((tool, i) => {
+      if (!tool.name) {
+        checks.push({type:'fail', title:'Tool ' + (i+1) + ': missing name', desc:'Every tool needs a unique name.'});
+      }
+      if (!tool.description) {
+        checks.push({type:'warn', title:'Tool "' + (tool.name || i) + '": no description', desc:'Descriptions help AI agents choose the right tool.'});
+      }
+      if (!tool.inputSchema) {
+        checks.push({type:'fail', title:'Tool "' + (tool.name || i) + '": no inputSchema', desc:'Input schemas are required for parameter validation.'});
+      } else {
+        if (tool.inputSchema.type !== 'object') {
+          checks.push({type:'warn', title:'Tool "' + tool.name + '": inputSchema type is not object', desc:'MCP tools should accept object parameters.'});
+        }
+        if (!tool.inputSchema.properties || Object.keys(tool.inputSchema.properties).length === 0) {
+          checks.push({type:'warn', title:'Tool "' + tool.name + '": no input properties', desc:'Define input parameters for the tool.'});
+        }
+      }
+    });
+  } else {
+    checks.push({type:'fail', title:'No tools defined', desc:'MCP servers must expose at least one tool.'});
+  }
+
+  // Check for prompts/resources
+  if (config.prompts) {
+    checks.push({type:'pass', title:'Prompts defined', desc:config.prompts.length + ' prompt(s)'});
+  }
+  if (config.resources) {
+    checks.push({type:'pass', title:'Resources defined', desc:config.resources.length + ' resource(s)'});
+  }
+
+  // Render
+  const iconMap = {pass:'✓', warn:'⚠', fail:'✗'};
+  checks.forEach(c => {
+    results.innerHTML += '<div class="result-item result-' + c.type + '"><div class="result-icon">' + iconMap[c.type] + '</div><div class="result-text"><h4>' + c.title + '</h4><p>' + c.desc + '</p></div></div>';
+  });
+
+  const passes = checks.filter(c => c.type === 'pass').length;
+  const warns = checks.filter(c => c.type === 'warn').length;
+  const fails = checks.filter(c => c.type === 'fail').length;
+  results.innerHTML += '<div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:8px;font-size:0.9rem"><strong>Summary:</strong> ' + passes + ' passed, ' + warns + ' warnings, ' + fails + ' errors</div>';
+}
+
+function clearResults() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('results').innerHTML = '';
+}
+</script>
+</body>
+</html>
