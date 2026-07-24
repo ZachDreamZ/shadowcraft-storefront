@@ -343,20 +343,34 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
   }
 </style>
+
+<meta property="og:title" content="MCP Server Validator — Free CLI & Web Tool">
+<meta property="og:description" content="Validate MCP server configurations in seconds. Free CLI tool and web app.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://zachdreamz.github.io/shadowcraft-storefront/mcp-server-validator.html">
 </head>
 <body>
 
 <nav style="position:sticky;top:0;z-index:50;background:color-mix(in srgb, var(--bg) 80%, transparent);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
   <div style="max-width:780px;margin:0 auto;padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;">
     <a href="https://zachdreamz.github.io/shadowcraft-storefront/" style="font-size:15px;font-weight:600;color:var(--fg);text-decoration:none;letter-spacing:-0.01em;">ShadowCraft</a>
-    <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="btn btn-secondary" style="text-decoration:none;padding:5px 12px;font-size:12px;">Pro — $9</a>
+    <a href="https://shadowcraft41.gumroad.com/l/chrlxf" <a href="https://github.com/ZachDreamZ/mcp-validator-cli" class="btn btn-secondary" style="text-decoration:none;padding:5px 12px;font-size:12px;">GitHub</a>
+    <a href="https://shadowcraft41.gumroad.com/l/chrlxf" class="btn btn-primary" style="text-decoration:none;padding:5px 12px;font-size:12px;">Pro — $9</a>
   </div>
 </nav>
 
 <main style="max-width:780px;margin:0 auto;padding:0 24px;">
   <section class="anim-fade-up" style="padding:56px 0 36px;text-align:center;">
+    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);color:var(--pass);padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;margin-bottom:16px;">Free &amp; Open Source</div>
     <h1 style="font-size:clamp(26px,5vw,36px);font-weight:700;letter-spacing:-0.03em;line-height:1.1;margin-bottom:10px;">Test your MCP server</h1>
     <p style="font-size:16px;color:var(--fg2);max-width:460px;margin:0 auto;line-height:1.5;">Validate config, connect to a live server, and test tool calls in real time.</p>
+    <div style="display:flex;gap:8px;margin-top:20px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://github.com/ZachDreamZ/mcp-validator-cli" class="btn btn-primary" style="text-decoration:none;">Install CLI</a>
+      <a href="#validator" class="btn btn-secondary" style="text-decoration:none;">Try in Browser</a>
+    </div>
+    <div style="margin-top:12px;font-size:13px;color:var(--fg3);">
+      <code style="font-family:var(--mono);background:var(--surface2);padding:3px 8px;border-radius:4px;">npm install -g mcp-validator</code>
+    </div>
   </section>
 
   <!-- Tabs -->
@@ -452,6 +466,18 @@
       </div>
     </div>
   </div>
+
+  
+  <!-- Features -->
+  <section class="anim-fade-up anim-d2" style="padding:32px 0;">
+    <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;margin-bottom:20px;text-align:center;">What it checks</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+      <div class="card" style="padding:20px;"><div style="font-size:24px;margin-bottom:8px;">✓</div><div style="font-size:14px;font-weight:600;margin-bottom:4px;">Protocol Compliance</div><div style="font-size:13px;color:var(--fg2);">JSON-RPC 2.0, transport types, version checks</div></div>
+      <div class="card" style="padding:20px;"><div style="font-size:24px;margin-bottom:8px;">🔍</div><div style="font-size:14px;font-weight:600;margin-bottom:4px;">Schema Validation</div><div style="font-size:13px;color:var(--fg2);">Tool definitions, input schemas, required params</div></div>
+      <div class="card" style="padding:20px;"><div style="font-size:24px;margin-bottom:8px;">⚡</div><div style="font-size:14px;font-weight:600;margin-bottom:4px;">Live Testing</div><div style="font-size:13px;color:var(--fg2);">Connect to real servers, test tool calls in real time</div></div>
+      <div class="card" style="padding:20px;"><div style="font-size:24px;margin-bottom:8px;">🛠</div><div style="font-size:14px;font-weight:600;margin-bottom:4px;">CI/CD Ready</div><div style="font-size:13px;color:var(--fg2);">Pipe-friendly stdin, exit codes, GitHub Actions</div></div>
+    </div>
+  </section>
 
   <!-- Pro -->
   <section id="pro-section" class="anim-fade-up anim-d3" style="padding:40px 0 64px;border-top:1px solid var(--border);text-align:center;">
