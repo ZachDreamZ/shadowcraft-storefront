@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base Network DeFi Dashboard — Live DEX Prices & Arbitrage Scanner</title>
+<meta name="description" content="Real-time DEX price comparison, gas monitoring, and arbitrage opportunity scanner for Base network. Monitors Uniswap v3 and Aerodrome pools.">
+<meta property="og:title" content="Base Network DeFi Dashboard">
+<meta property="og:description" content="Live DEX prices, gas monitoring, and arbitrage scanning on Base.">
+<meta property="og:type" content="website">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a25;
+    --border: #2a2a35; --text: #e8e8f0; --muted: #7a7a8a;
+    --blue: #3b82f6; --green: #22c55e; --red: #ef4444; --amber: #f59e0b;
+    --purple: #8b5cf6; --radius: 10px; --font: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh;
+    padding: 16px; line-height: 1.5;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  header { text-align: center; padding: 24px 0 32px; }
+  header h1 { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 800; margin-bottom: 4px; }
+  header h1 span { color: var(--blue); }
+  header p { color: var(--muted); font-size: 0.9rem; }
+  .status-bar {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 24px; padding: 12px; background: var(--surface);
+    border-radius: var(--radius); border: 1px solid var(--border);
+  }
+  .status-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot-amber { background: var(--amber); }
+  .dot-red { background: var(--red); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; overflow: hidden;
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .card-header h2 { font-size: 1rem; font-weight: 700; }
+  .card-header .badge {
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 4px;
+    background: rgba(59,130,246,0.15); color: var(--blue); font-weight: 600;
+  }
+  .price-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.85rem;
+  }
+  .price-row:last-child { border-bottom: none; }
+  .venue { color: var(--muted); }
+  .price { font-family: var(--font); font-weight: 600; }
+  .spread { font-family: var(--font); font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
+  .spread-positive { background: rgba(34,197,94,0.15); color: var(--green); }
+  .spread-negative { background: rgba(239,68,68,0.15); color: var(--red); }
+  .gas-display {
+    text-align: center; padding: 20px 0;
+  }
+  .gas-value { font-size: 2.5rem; font-weight: 800; font-family: var(--font); }
+  .gas-label { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+  .gas-cost { font-size: 1rem; color: var(--green); margin-top: 8px; font-family: var(--font); }
+  .arb-card { border-color: rgba(34,197,94,0.3); }
+  .arb-opportunity {
+    background: var(--surface2); border-radius: 8px; padding: 12px;
+    margin-bottom: 8px; border-left: 3px solid var(--green);
+  }
+  .arb-opportunity.no-arb { border-left-color: var(--muted); opacity: 0.6; }
+  .arb-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .arb-pair { font-weight: 700; font-size: 0.9rem; }
+  .arb-profit { font-family: var(--font); font-weight: 700; }
+  .arb-details { font-size: 0.75rem; color: var(--muted); }
+  .pool-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .pool-table th { text-align: left; color: var(--muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  .pool-table td { padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.03); font-family: var(--font); }
+  .pool-table tr:hover { background: var(--surface2); }
+  .loading { color: var(--muted); text-align: center; padding: 40px; font-size: 0.9rem; }
+  .error { color: var(--red); text-align: center; padding: 20px; font-size: 0.85rem; }
+  .footer {
+    text-align: center; padding: 24px 0; color: var(--muted); font-size: 0.75rem;
+    border-top: 1px solid var(--border); margin-top: 24px;
+  }
+  .footer a { color: var(--blue); text-decoration: none; }
+  .refresh-btn {
+    background: var(--blue); color: #fff; border: none; padding: 8px 16px;
+    border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 600;
+    min-height: 44px; min-width: 44px;
+  }
+  .refresh-btn:hover { background: #2563eb; }
+  .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: 1fr; }
+    .gas-value { font-size: 2rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Base Network <span>DeFi Dashboard</span></h1>
+    <p>Real-time DEX prices, gas monitoring, and arbitrage scanning on Base (Chain ID 8453)</p>
+  </header>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-dot dot-green" id="status-dot"></div>
+      <span id="status-text">Connecting...</span>
+    </div>
+    <div class="status-item">
+      <span>Chain: <strong>Base</strong></span>
+    </div>
+    <div class="status-item">
+      <span>Last scan: <strong id="last-scan">--</strong></span>
+    </div>
+    <div class="status-item">
+      <button class="refresh-btn" id="refresh-btn" onclick="scanAll()">Scan Now</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <h2>Gas Price</h2>
+        <div class="badge">LIVE</div>
+      </div>
+      <div class="gas-display">
+        <div class="gas-value" id="gas-value">--</div>
+        <div class="gas-label">Gwei</div>
+        <div class="gas-cost" id="gas-cost">Round-trip swap: --</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>ETH/USDC Prices</h2>
+        <div class="badge" id="price-count">0 venues</div>
+      </div>
+      <div id="prices-container">
+        <div class="loading">Loading prices...</div>
+      </div>
+    </div>
+
+    <div class="card arb-card">
+      <div class="card-header">
+        <h2>Arbitrage Opportunities</h2>
+        <div class="badge" id="arb-count">0 found</div>
+      </div>
+      <div id="arb-container">
+        <div class="loading">Scanning for opportunities...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Pool Liquidity</h2>
+        <div class="badge">4 pools</div>
+      </div>
+      <div id="pools-container">
+        <div class="loading">Loading pool data...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Built by <a href="https://github.com/ZachDreamZ">ZachDreamZ</a> / ShadowCraft AI</p>
+    <p style="margin-top:4px">Data from public Base RPC endpoints. Not financial advice. Read-only scanning.</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  
+  const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+  const WETH = '0x4200000000000000000000000000000000000006';
+  const USDC_DEC = 6, WETH_DEC = 18;
+  const UNIV3_FACTORY = '0x33128a8fC17869897dcE68Ed026d694621f6FDfD';
+  const AERO_FACTORY = '0x420DD381b31aEf6683db6B902084cB0FFECe40Da';
+  const FEES = [500, 3000, 10000];
+  const RPCS = [
+    'https://mainnet.base.org',
+    'https://base-rpc.publicnode.com',
+    'https://base.llamarpc.com'
+  ];
+  const SEL = {
+    getPool: '0x1698ee82', slot0: '0x3850c7bd', liquidity: '0x1a686502',
+    token0: '0x0dfe1681', token1: '0xd21220a7', reserves: '0x0902f1ac',
+    aeroGetPool: '0x79bc57d5', aeroGetFee: '0xcc56b2c5'
+  };
+  const ZERO = '0x' + '0'.repeat(40);
+  
+  let rpcIdx = 0;
+  
+  function encAddr(a) { return a.toLowerCase().replace('0x','').padStart(64,'0'); }
+  function encUint(n) { return n.toString(16).padStart(64,'0'); }
+  function encBool(b) { return encUint(b ? 1 : 0); }
+  function decAddr(w) { return '0x' + w.slice(-40); }
+  function words(hex) { const h = hex.startsWith('0x') ? hex.slice(2) : hex; const r=[]; for(let i=0;i<h.length;i+=64) r.push(h.slice(i,i+64)); return r; }
+  
+  async function rpcCall(method, params) {
+    const payload = JSON.stringify({jsonrpc:'2.0',id:1,method,params});
+    for (let i = 0; i < RPCS.length; i++) {
+      const url = RPCS[(rpcIdx + i) % RPCS.length];
+      try {
+        const resp = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:payload});
+        const data = await resp.json();
+        if (data.error) throw new Error(JSON.stringify(data.error));
+        rpcIdx = (rpcIdx + i) % RPCS.length;
+        return data.result;
+      } catch(e) { continue; }
+    }
+    throw new Error('All RPCs failed');
+  }
+  
+  async function ethCall(to, data) { return rpcCall('eth_call', [{to, data}, 'latest']); }
+  async function gasPrice() { return parseInt(await rpcCall('eth_gasPrice', []), 16); }
+  
+  function orientation(poolData, t0, t1) {
+    return decAddr(t0).toLowerCase() === WETH.toLowerCase();
+  }
+  
+  async function discoverPools() {
+    const pools = [];
+    for (const fee of FEES) {
+      try {
+        const data = SEL.getPool + encAddr(USDC) + encAddr(WETH) + encUint(fee);
+        const pool = decAddr(await ethCall(UNIV3_FACTORY, data));
+        if (pool === ZERO) continue;
+        const liq = parseInt(await ethCall(pool, SEL.liquidity), 16);
+        if (liq === 0) continue;
+        const t0 = await ethCall(pool, SEL.token0);
+        const t1 = await ethCall(pool, SEL.token1);
+        const isWeth0 = orientation(null, t0, t1);
+        pools.push({ name: `Uniswap v3 ${(fee/10000).toFixed(2)}%`, pool, fee: fee/100, type: 'univ3', isWeth0 });
+      } catch(e) { console.error('Pool discovery error:', e); }
+    }
+    try {
+      const data = SEL.aeroGetPool + encAddr(USDC) + encAddr(WETH) + encBool(false);
+      const pool = decAddr(await ethCall(AERO_FACTORY, data));
+      if (pool !== ZERO) {
+        const feeData = SEL.aeroGetFee + encAddr(pool) + encBool(false);
+        const feeBps = parseInt(await ethCall(AERO_FACTORY, feeData), 16);
+        const t0 = await ethCall(pool, SEL.token0);
+        const t1 = await ethCall(pool, SEL.token1);
+        const isWeth0 = orientation(null, t0, t1);
+        pools.push({ name: 'Aerodrome vAMM', pool, fee: feeBps, type: 'aero', isWeth0 });
+      }
+    } catch(e) { console.error('Aerodrome discovery error:', e); }
+    return pools;
+  }
+  
+  async function getPrice(pool) {
+    try {
+      if (pool.type === 'univ3') {
+        const raw = await ethCall(pool.pool, SEL.slot0);
+        const sqrtPrice = BigInt(words(raw)[0]);
+        const price = Number((sqrtPrice * sqrtPrice) / (BigInt(1) << BigInt(192)));
+        return pool.isWeth0 ? price * Math.pow(10, WETH_DEC - USDC_DEC) : (1/price) * Math.pow(10, WETH_DEC - USDC_DEC);
+      } else {
+        const raw = await ethCall(pool.pool, SEL.reserves);
+        const w = words(raw);
+        let r0 = BigInt('0x' + w[0]), r1 = BigInt('0x' + w[1]);
+        if (r0 === 0n || r1 === 0n) return null;
+        if (pool.isWeth0) return Number(r1 / BigInt(10**USDC_DEC)) / Number(r0 / BigInt(10**WETH_DEC));
+        return Number(r0 / BigInt(10**USDC_DEC)) / Number(r1 / BigInt(10**WETH_DEC));
+      }
+    } catch(e) { return null; }
+  }
+  
+  function formatNum(n, decimals) { return n ? n.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals}) : '--'; }
+  
+  function renderPrices(prices) {
+    const container = document.getElementById('prices-container');
+    document.getElementById('price-count').textContent = prices.length + ' venues';
+    if (prices.length === 0) { container.innerHTML = '<div class="error">No prices available</div>'; return; }
+    const median = prices.map(p=>p.price).sort((a,b)=>a-b)[Math.floor(prices.length/2)];
+    let html = '';
+    prices.forEach(p => {
+      const diff = ((p.price - median) / median * 100);
+      const cls = diff > 0 ? 'spread-positive' : 'spread-negative';
+      html += `<div class="price-row">
+        <span class="venue">${p.name}</span>
+        <span class="price">${formatNum(p.price, 2)} USDC</span>
+        <span class="spread ${cls}">${diff > 0 ? '+' : ''}${diff.toFixed(3)}%</span>
+      </div>`;
+    });
+    container.innerHTML = html;
+  }
+  
+  function renderGas(gasWei) {
+    const gwei = gasWei / 1e9;
+    const ethPrice = 1880;
+    const swapCost = (21000 * 2 * gasWei / 1e18 * ethPrice);
+    document.getElementById('gas-value').textContent = gwei.toFixed(4);
+    document.getElementById('gas-cost').textContent = `Round-trip swap: $${swapCost.toFixed(4)}`;
+    document.getElementById('gas-value').style.color = gwei < 0.01 ? 'var(--green)' : gwei < 0.1 ? 'var(--amber)' : 'var(--red)';
+  }
+  
+  function renderArbitrage(prices, gasUsd) {
+    const container = document.getElementById('arb-container');
+    if (prices.length < 2) { container.innerHTML = '<div class="loading">Need 2+ venues</div>'; return; }
+    const opps = [];
+    const notional = 1;
+    for (let i = 0; i < prices.length; i++) {
+      for (let j = 0; j < prices.length; j++) {
+        if (i === j) continue;
+        const gross = notional * (prices[j].price - prices[i].price);
+        const fees = notional * (prices[i].price * prices[i].fee / 10000 + prices[j].price * prices[j].fee / 10000);
+        const net = gross - fees - gasUsd;
+        if (net > 0) opps.push({ buy: prices[i], sell: prices[j], gross, fees, gasUsd, net });
+      }
+    }
+    document.getElementById('arb-count').textContent = opps.length + ' found';
+    if (opps.length === 0) {
+      container.innerHTML = '<div class="arb-opportunity no-arb"><div class="arb-header"><span class="arb-pair">No profitable arbitrage</span></div><div class="arb-details">Best spread is below fees + gas cost</div></div>';
+      return;
+    }
+    opps.sort((a,b) => b.net - a.net);
+    let html = '';
+    opps.slice(0, 5).forEach(o => {
+      html += `<div class="arb-opportunity">
+        <div class="arb-header">
+          <span class="arb-pair">${o.buy.name} -> ${o.sell.name}</span>
+          <span class="arb-profit" style="color:var(--green)">+$${o.net.toFixed(4)}</span>
+        </div>
+        <div class="arb-details">
+          Buy @ ${formatNum(o.buy.price,2)} | Sell @ ${formatNum(o.sell.price,2)} | Fees: $${o.fees.toFixed(4)} | Gas: $${o.gasUsd.toFixed(4)}
+        </div>
+      </div>`;
+    });
+    container.innerHTML = html;
+  }
+  
+  function renderPools(pools, prices) {
+    const container = document.getElementById('pools-container');
+    let html = '<table class="pool-table"><thead><tr><th>Pool</th><th>Price</th><th>Fee</th><th>Address</th></tr></thead><tbody>';
+    pools.forEach((p, i) => {
+      const price = prices.find(pr => pr.pool === p.pool);
+      html += `<tr>
+        <td>${p.name}</td>
+        <td>${price ? formatNum(price.price, 2) : '--'}</td>
+        <td>${p.fee} bps</td>
+        <td style="font-size:0.7rem;color:var(--muted)">${p.pool.slice(0,6)}...${p.pool.slice(-4)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+  
+  async function scanAll() {
+    const btn = document.getElementById('refresh-btn');
+    btn.disabled = true;
+    btn.textContent = 'Scanning...';
+    document.getElementById('status-text').textContent = 'Scanning...';
+    document.getElementById('status-dot').className = 'status-dot dot-amber';
+    
+    try {
+      const pools = await discoverPools();
+      const prices = [];
+      for (const pool of pools) {
+        const price = await getPrice(pool);
+        if (price) prices.push({ name: pool.name, price, fee: pool.fee, pool: pool.pool });
+      }
+      const gasWei = await gasPrice();
+      const ethPrice = prices.length > 0 ? prices[Math.floor(prices.length/2)].price : 1880;
+      const gasUsd = 420000 * gasWei / 1e18 * ethPrice;
+      
+      renderPrices(prices);
+      renderGas(gasWei);
+      renderArbitrage(prices, gasUsd);
+      renderPools(pools, prices);
+      
+      document.getElementById('status-text').textContent = 'Connected';
+      document.getElementById('status-dot').className = 'status-dot dot-green';
+      document.getElementById('last-scan').textContent = new Date().toLocaleTimeString();
+    } catch(e) {
+      document.getElementById('status-text').textContent = 'Error: ' + e.message;
+      document.getElementById('status-dot').className = 'status-dot dot-red';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Scan Now';
+  }
+  
+  scanAll();
+  setInterval(scanAll, 30000);
+})();
+</script>
+</body>
+</html>
+
